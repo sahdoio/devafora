@@ -1,36 +1,37 @@
 # DevAfora
 
-A customizable link aggregator built with Laravel 11, Vue 3, and Inertia.js. Features a dark-themed interface, integrated blog system, and newsletter functionality powered by Postmark.
+Um agregador de links personalizável construído com Laravel 11, Vue 3 e Inertia.js. Apresenta uma interface dark moderna, sistema de blog integrado e funcionalidade de newsletter.
 
 ![Laravel](https://img.shields.io/badge/Laravel-11-FF2D20?style=flat&logo=laravel&logoColor=white)
 ![Vue.js](https://img.shields.io/badge/Vue.js-3-4FC08D?style=flat&logo=vue.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat&logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38B2AC?style=flat&logo=tailwind-css&logoColor=white)
 
-## Features
+## Características
 
-- Link aggregator with sortable, toggleable links
-- Blog system with HTML/Markdown support
-- Newsletter subscription with Postmark integration
-- Responsive dark-themed UI
-- SPA architecture using Inertia.js
-- Actions pattern for business logic isolation
-- TypeScript for type safety
-- Optimized queries with eager loading
+- 🔗 Agregador de links com ordenação e ativação/desativação
+- 📝 Sistema de blog com suporte HTML/Markdown
+- 📧 Sistema de newsletter com validação
+- 🎨 Interface dark moderna e responsiva
+- ⚡ SPA utilizando Inertia.js
+- 🏗️ Arquitetura Action-based para lógica de negócio
+- 🔒 TypeScript para type safety
+- 🚀 Queries otimizadas com eager loading
+- 📦 Componentes Vue reutilizáveis
 
-## Tech Stack
+## Stack Tecnológica
 
-**Backend:** Laravel 11, SQLite, Postmark
+**Backend:** Laravel 11, SQLite
 **Frontend:** Vue 3, TypeScript, Inertia.js, Tailwind CSS 4, Vite
 
-## Requirements
+## Requisitos
 
 - PHP 8.2+
 - Composer
 - Node.js 18+
 - SQLite3
 
-## Installation
+## Instalação
 
 ```bash
 git clone https://github.com/sahdoio/devafora.git
@@ -43,45 +44,85 @@ touch database/database.sqlite
 php artisan migrate --seed
 ```
 
-Configure Postmark (optional) in `.env`:
-```env
-MAIL_MAILER=postmark
-MAIL_FROM_NAME='Your Name'
-MAIL_FROM_ADDRESS=your@email.com
-MAIL_CC=copy@email.com
-POSTMARK_TOKEN='your-token-here'
-```
-
-Start development servers:
+Inicie os servidores de desenvolvimento:
 ```bash
 php artisan serve
 npm run dev
 ```
 
-Access at `http://localhost:8000`
+Acesse em `http://localhost:8000`
 
-## Project Structure
+### Configuração Opcional de E-mail
+
+Para ativar o envio de e-mails da newsletter, configure no `.env`:
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=seu_username
+MAIL_PASSWORD=sua_senha
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=noreply@devafora.com
+MAIL_FROM_NAME="DevAfora"
+```
+
+## Estrutura do Projeto
 
 ```
 app/
-├── Actions/Newsletter/          # Business logic
-├── Http/Controllers/Frontend/   # Frontend controllers
-├── Http/Resources/              # API resources
-├── Models/                      # Eloquent models
-└── Mail/                        # Mailables
+├── Actions/                     # Lógica de negócio organizada por domínio
+│   ├── Profile/                 # Actions relacionadas a perfis
+│   ├── Links/                   # Actions relacionadas a links
+│   ├── Posts/                   # Actions relacionadas a posts
+│   └── Newsletter/              # Actions relacionadas à newsletter
+├── Http/
+│   ├── Controllers/
+│   │   ├── Frontend/            # Controllers que retornam views Inertia
+│   │   │   ├── HomeController.php
+│   │   │   └── PostController.php
+│   │   └── Api/                 # Controllers de API que retornam JSON
+│   │       └── NewsletterController.php
+│   ├── Resources/               # Laravel Resources para formatação de dados
+│   │   ├── ProfileResource.php
+│   │   ├── LinkResource.php
+│   │   ├── PostResource.php
+│   │   └── PostListResource.php
+│   └── Requests/                # Form Requests para validação
+│       └── NewsletterSubscribeRequest.php
+└── Models/                      # Eloquent Models com lógica de domínio
+    ├── Profile.php
+    ├── Link.php
+    ├── Post.php
+    └── NewsletterSubscription.php
 
-resources/
-├── js/components/               # Vue components
-├── js/layouts/                  # Application layouts
-├── js/pages/                    # Inertia pages
-└── views/emails/                # Email templates
+database/
+├── migrations/                  # Database migrations
+├── factories/                   # Model factories com dados realistas
+└── seeders/                     # Database seeders
+
+resources/js/
+├── components/                  # Componentes Vue reutilizáveis
+│   ├── LinkCard.vue
+│   ├── PostCard.vue
+│   └── NewsletterForm.vue
+└── pages/                       # Páginas Inertia
+    ├── Home.vue
+    └── Post/
+        └── Show.vue
+
+routes/
+├── web.php                      # Rotas web (Inertia)
+└── api.php                      # Rotas de API
 ```
 
-## Architecture
+## Arquitetura
 
-Business logic is isolated in Action classes:
+### Padrão Action-Based
+
+Toda a lógica de negócio está isolada em classes Action:
 
 ```php
+// app/Actions/Newsletter/SubscribeToNewsletterAction.php
 class SubscribeToNewsletterAction
 {
     public function execute(string $email, ?string $name = null): NewsletterSubscription
@@ -96,17 +137,44 @@ class SubscribeToNewsletterAction
             $subscription->name = $name ?? $subscription->name;
             $subscription->subscribe();
 
-            $this->sendWelcomeEmail->execute($subscription);
-
             return $subscription;
         });
     }
 }
 ```
 
-Data presentation through Laravel Resources:
+### Controllers Limpos
+
+Controllers apenas chamam Actions e retornam views/JSON:
 
 ```php
+// app/Http/Controllers/Frontend/HomeController.php
+class HomeController extends Controller
+{
+    public function __invoke(
+        GetActiveProfileAction $getProfile,
+        GetActiveLinksAction $getLinks,
+        GetLatestPostsAction $getLatestPosts
+    ): Response {
+        $profile = $getProfile->execute();
+        $links = $getLinks->execute($profile?->id);
+        $posts = $getLatestPosts->execute(limit: 3, profileId: $profile?->id);
+
+        return Inertia::render('Home', [
+            'profile' => ProfileResource::make($profile),
+            'links' => LinkResource::collection($links),
+            'posts' => PostListResource::collection($posts),
+        ]);
+    }
+}
+```
+
+### Resources para Formatação de Dados
+
+TODOS os dados são formatados via Laravel Resources antes de ir ao frontend:
+
+```php
+// app/Http/Resources/PostResource.php
 class PostResource extends JsonResource
 {
     public function toArray(Request $request): array
@@ -117,17 +185,20 @@ class PostResource extends JsonResource
             'slug' => $this->slug,
             'excerpt' => $this->excerpt,
             'content' => $this->content,
-            'publishedAt' => $this->published_at?->format('Y-m-d'),
             'readTime' => $this->read_time ? "{$this->read_time} min" : null,
-            'tags' => $this->tags,
+            'tags' => $this->tags ?? [],
+            'publishedAt' => $this->published_at?->format('d/m/Y'),
         ];
     }
 }
 ```
 
-Models with domain logic:
+### Models com Lógica de Domínio (DDD)
+
+Models podem conter regras de negócio quando faz sentido:
 
 ```php
+// app/Models/Post.php
 class Post extends Model
 {
     public function generateSlug(): void
@@ -140,6 +211,16 @@ class Post extends Model
         $this->is_published = true;
         $this->published_at = now();
         $this->save();
+    }
+
+    public function addTag(string $tag): void
+    {
+        $tags = $this->tags ?? [];
+        if (!in_array($tag, $tags)) {
+            $tags[] = $tag;
+            $this->tags = $tags;
+            $this->save();
+        }
     }
 }
 ```
@@ -158,31 +239,41 @@ class Post extends Model
 **newsletter_subscriptions**
 - id, email (unique), name, is_active, subscribed_at, unsubscribed_at, timestamps
 
-## Customization
+## Personalização
 
-Edit seeders to customize profile, links, and posts:
+### Editando o Perfil Principal
+
+Edite o seeder para personalizar seu perfil e links:
 
 ```php
-// ProfileSeeder.php
-Profile::factory()->create([
-    'name' => 'Your Name',
-    'bio' => 'Your bio...',
-    'photo' => '/images/your-photo.jpg',
+// database/seeders/DatabaseSeeder.php
+$profile = Profile::factory()->create([
+    'name' => 'Seu Nome',
+    'bio' => 'Sua bio aqui...',
+    'photo' => null, // ou caminho para sua foto
+    'is_active' => true,
 ]);
-
-// LinkSeeder.php
-$links = [
-    [
-        'title' => 'GitHub',
-        'description' => 'My projects',
-        'url' => 'https://github.com/username',
-        'icon' => 'github',
-        'order' => 0,
-    ],
-];
 ```
 
-Create new posts via Tinker:
+### Customizando Links
+
+Edite os links sociais no seeder:
+
+```php
+Link::factory()->create([
+    'profile_id' => $profile->id,
+    'title' => 'GitHub',
+    'description' => 'Meus projetos open source',
+    'url' => 'https://github.com/seu-usuario',
+    'icon' => 'github',
+    'order' => 0,
+    'is_active' => true,
+]);
+```
+
+### Criando Novos Posts
+
+Via Tinker:
 
 ```bash
 php artisan tinker
@@ -190,50 +281,98 @@ php artisan tinker
 
 ```php
 $profile = Profile::first();
-$profile->posts()->create([
-    'title' => 'My Article',
-    'slug' => 'my-article',
-    'excerpt' => 'Brief description...',
-    'content' => '<p>HTML content...</p>',
-    'author' => 'Your Name',
+$post = $profile->posts()->create([
+    'title' => 'Meu Artigo',
+    'slug' => 'meu-artigo',
+    'excerpt' => 'Breve descrição do artigo...',
+    'content' => '<p>Conteúdo HTML do artigo...</p>',
+    'author' => 'Seu Nome',
     'read_time' => 5,
-    'tags' => ['Tag1', 'Tag2'],
+    'tags' => ['Laravel', 'Vue.js'],
     'is_published' => true,
     'published_at' => now(),
 ]);
 ```
 
-## Testing
+Ou usando o método do model:
+
+```php
+$post->publish(); // Publica o post
+$post->addTag('TypeScript'); // Adiciona uma tag
+$post->generateSlug(); // Gera slug automaticamente
+```
+
+## Rotas Disponíveis
+
+### Frontend (Inertia.js)
+- `GET /` - Página principal com perfil, links e posts
+- `GET /posts/{slug}` - Visualização de post individual
+
+### API
+- `POST /api/newsletter/subscribe` - Inscrição na newsletter
+  - Body: `{ "email": "email@example.com", "name": "Nome (opcional)" }`
+  - Response: `{ "message": "...", "data": {...} }`
+
+## Componentes Vue
+
+### LinkCard.vue
+Componente para exibir um card de link social:
+```vue
+<LinkCard :link="link" />
+```
+
+### PostCard.vue
+Componente para exibir um card de post na listagem:
+```vue
+<PostCard :post="post" />
+```
+
+### NewsletterForm.vue
+Formulário de inscrição na newsletter com validação e feedback:
+```vue
+<NewsletterForm />
+```
+
+## Testes
 
 ```bash
 php artisan test
 ```
 
-## Production Build
+## Build de Produção
 
 ```bash
 npm run build
 php artisan optimize
 ```
 
-## Security
+## Segurança
 
-- CSRF protection on all forms
-- Laravel validation on all inputs
-- SQL injection protection via Eloquent
-- XSS protection with trusted content only
-- Rate limiting on public endpoints
+- ✅ Proteção CSRF em todos os formulários
+- ✅ Validação Laravel em todas as entradas
+- ✅ Proteção contra SQL injection via Eloquent
+- ✅ Proteção XSS com sanitização de conteúdo
+- ✅ Form Requests com mensagens personalizadas
+- ✅ Rate limiting em endpoints públicos
 
-## Deployment
+## Deploy
 
-1. Set up production environment variables
-2. Run `php artisan migrate --force`
-3. Run `php artisan db:seed --force`
-4. Build assets with `npm run build`
-5. Optimize with `php artisan optimize`
-6. Configure queue worker for background jobs
-7. Set up cron for scheduled tasks if needed
+1. Configure as variáveis de ambiente de produção
+2. Execute `php artisan migrate --force`
+3. Execute `php artisan db:seed --force`
+4. Compile os assets: `npm run build`
+5. Otimize: `php artisan optimize`
+6. Configure workers de fila se necessário
+7. Configure cron jobs se necessário
 
-## License
+## Contribuindo
 
-MIT License. See [LICENSE](LICENSE) file for details.
+Pull requests são bem-vindos! Para mudanças maiores, abra uma issue primeiro para discutir o que você gostaria de mudar.
+
+## Licença
+
+MIT License. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+---
+
+**Desenvolvido com ❤️ usando Laravel + Vue.js + Inertia.js**

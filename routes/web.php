@@ -1,12 +1,15 @@
 <?php
 
+use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\PostController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome');
-})->name('home');
+// Public Routes
+Route::get('/', HomeController::class)->name('home');
+Route::get('/posts/{slug}', [PostController::class, 'show'])->name('posts.show');
 
+// Admin Routes
 Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
