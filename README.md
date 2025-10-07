@@ -1,378 +1,138 @@
 # DevAfora
 
-Um agregador de links personalizável construído com Laravel 11, Vue 3 e Inertia.js. Apresenta uma interface dark moderna, sistema de blog integrado e funcionalidade de newsletter.
+A customizable link aggregator built with Laravel 11, Vue 3, and Inertia.js featuring a modern dark interface, integrated blog system, and newsletter functionality.
 
-![Laravel](https://img.shields.io/badge/Laravel-11-FF2D20?style=flat&logo=laravel&logoColor=white)
-![Vue.js](https://img.shields.io/badge/Vue.js-3-4FC08D?style=flat&logo=vue.js&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat&logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38B2AC?style=flat&logo=tailwind-css&logoColor=white)
+## Requirements
 
-## Características
-
-- 🔗 Agregador de links com ordenação e ativação/desativação
-- 📝 Sistema de blog com suporte HTML/Markdown
-- 📧 Sistema de newsletter com validação
-- 🎨 Interface dark moderna e responsiva
-- ⚡ SPA utilizando Inertia.js
-- 🏗️ Arquitetura Action-based para lógica de negócio
-- 🔒 TypeScript para type safety
-- 🚀 Queries otimizadas com eager loading
-- 📦 Componentes Vue reutilizáveis
-
-## Stack Tecnológica
-
-**Backend:** Laravel 11, SQLite
-**Frontend:** Vue 3, TypeScript, Inertia.js, Tailwind CSS 4, Vite
-
-## Requisitos
-
-- PHP 8.2+
+- PHP 8.2 or higher
 - Composer
-- Node.js 18+
+- Node.js 18 or higher
 - SQLite3
 
-## Instalação
+## Installation
 
-```bash
+Clone the repository and install dependencies:
+
+```
 git clone https://github.com/sahdoio/devafora.git
 cd devafora
 composer install
 npm install
+```
+
+Configure environment and database:
+
+```
 cp .env.example .env
 php artisan key:generate
 touch database/database.sqlite
 php artisan migrate --seed
 ```
 
-Inicie os servidores de desenvolvimento:
-```bash
+Start development servers:
+
+```
 php artisan serve
 npm run dev
 ```
 
-Acesse em `http://localhost:8000`
+Access the application at http://localhost:8000
 
-### Configuração Opcional de E-mail
+## Architecture
 
-Para ativar o envio de e-mails da newsletter, configure no `.env`:
-```env
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.mailtrap.io
-MAIL_PORT=2525
-MAIL_USERNAME=seu_username
-MAIL_PASSWORD=sua_senha
-MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS=noreply@devafora.com
-MAIL_FROM_NAME="DevAfora"
-```
+This project follows an Action-based architecture pattern where business logic is completely isolated from controllers. The separation of concerns is strictly enforced across the entire application.
 
-## Estrutura do Projeto
+### Action Pattern
 
-```
-app/
-├── Actions/                     # Lógica de negócio organizada por domínio
-│   ├── Profile/                 # Actions relacionadas a perfis
-│   ├── Links/                   # Actions relacionadas a links
-│   ├── Posts/                   # Actions relacionadas a posts
-│   └── Newsletter/              # Actions relacionadas à newsletter
-├── Http/
-│   ├── Controllers/
-│   │   ├── Frontend/            # Controllers que retornam views Inertia
-│   │   │   ├── HomeController.php
-│   │   │   └── PostController.php
-│   │   └── Api/                 # Controllers de API que retornam JSON
-│   │       └── NewsletterController.php
-│   ├── Resources/               # Laravel Resources para formatação de dados
-│   │   ├── ProfileResource.php
-│   │   ├── LinkResource.php
-│   │   ├── PostResource.php
-│   │   └── PostListResource.php
-│   └── Requests/                # Form Requests para validação
-│       └── NewsletterSubscribeRequest.php
-└── Models/                      # Eloquent Models com lógica de domínio
-    ├── Profile.php
-    ├── Link.php
-    ├── Post.php
-    └── NewsletterSubscription.php
+All business logic resides in Action classes organized by domain. Each Action has a single execute method that performs one specific operation. Actions are injected into controllers via dependency injection and can be composed together for complex workflows.
 
-database/
-├── migrations/                  # Database migrations
-├── factories/                   # Model factories com dados realistas
-└── seeders/                     # Database seeders
+Actions are located in app/Actions and organized into domain folders such as Profile, Links, Posts, and Newsletter. For example, subscribing to a newsletter involves the SubscribeToNewsletterAction which handles transaction management, duplicate checking, and calling other actions like SendWelcomeEmailAction.
 
-resources/js/
-├── components/                  # Componentes Vue reutilizáveis
-│   ├── LinkCard.vue
-│   ├── PostCard.vue
-│   └── NewsletterForm.vue
-└── pages/                       # Páginas Inertia
-    ├── Home.vue
-    └── Post/
-        └── Show.vue
+### Controllers
 
-routes/
-├── web.php                      # Rotas web (Inertia)
-└── api.php                      # Rotas de API
-```
+Controllers are thin by design. They only receive Actions via dependency injection, call their execute methods, and return responses. Frontend controllers return Inertia.js views while API controllers return JSON responses.
 
-## Arquitetura
+Controllers are separated into Frontend and Api namespaces. Frontend controllers at app/Http/Controllers/Frontend handle web routes and return Inertia responses. Api controllers at app/Http/Controllers/Api handle API routes and return JSON responses.
 
-### Padrão Action-Based
+### Resources Layer
 
-Toda a lógica de negócio está isolada em classes Action:
+All data transformation happens through Laravel Resources before reaching the frontend. This creates a consistent API contract and handles things like date formatting, URL generation, and field selection. Every model has at least one Resource class, and some have multiple for different contexts.
 
-```php
-// app/Actions/Newsletter/SubscribeToNewsletterAction.php
-class SubscribeToNewsletterAction
-{
-    public function execute(string $email, ?string $name = null): NewsletterSubscription
-    {
-        return DB::transaction(function () use ($email, $name) {
-            $subscription = NewsletterSubscription::firstOrNew(['email' => $email]);
+Resources are located in app/Http/Resources. For example, PostResource provides full post data for individual pages while PostListResource provides a lighter version for post listings.
 
-            if ($subscription->exists && $subscription->isSubscribed()) {
-                return $subscription;
-            }
+### Models with Domain Logic
 
-            $subscription->name = $name ?? $subscription->name;
-            $subscription->subscribe();
+Models contain domain-specific business methods using Domain-Driven Design principles. Methods like publish, subscribe, addTag, and generateSlug encapsulate business rules that belong to the entity itself. Database queries are handled through Eloquent scopes for reusability.
 
-            return $subscription;
-        });
-    }
-}
-```
+Models are located in app/Models and include Profile, Link, Post, and NewsletterSubscription. Each model defines its relationships, scopes, and domain methods.
 
-### Controllers Limpos
+### Frontend Architecture
 
-Controllers apenas chamam Actions e retornam views/JSON:
+The frontend uses Vue 3 with TypeScript and Inertia.js for a seamless SPA experience without building a separate API. Components are organized into reusable pieces like LinkCard, PostCard, and NewsletterForm. Pages are Inertia views that receive data as props from controllers.
 
-```php
-// app/Http/Controllers/Frontend/HomeController.php
-class HomeController extends Controller
-{
-    public function __invoke(
-        GetActiveProfileAction $getProfile,
-        GetActiveLinksAction $getLinks,
-        GetLatestPostsAction $getLatestPosts
-    ): Response {
-        $profile = $getProfile->execute();
-        $links = $getLinks->execute($profile?->id);
-        $posts = $getLatestPosts->execute(limit: 3, profileId: $profile?->id);
+Pages are located in resources/js/pages while reusable components are in resources/js/components. The application uses Tailwind CSS 4 for styling and Vite for asset bundling.
 
-        return Inertia::render('Home', [
-            'profile' => ProfileResource::make($profile),
-            'links' => LinkResource::collection($links),
-            'posts' => PostListResource::collection($posts),
-        ]);
-    }
-}
-```
+## Project Structure
 
-### Resources para Formatação de Dados
+The application is organized into clear layers:
 
-TODOS os dados são formatados via Laravel Resources antes de ir ao frontend:
+**Backend Structure:**
+- app/Actions - Business logic organized by domain
+- app/Http/Controllers/Frontend - Web controllers returning Inertia views
+- app/Http/Controllers/Api - API controllers returning JSON
+- app/Http/Resources - Data transformation layer
+- app/Http/Requests - Form validation
+- app/Models - Eloquent models with domain methods
 
-```php
-// app/Http/Resources/PostResource.php
-class PostResource extends JsonResource
-{
-    public function toArray(Request $request): array
-    {
-        return [
-            'id' => $this->id,
-            'title' => $this->title,
-            'slug' => $this->slug,
-            'excerpt' => $this->excerpt,
-            'content' => $this->content,
-            'readTime' => $this->read_time ? "{$this->read_time} min" : null,
-            'tags' => $this->tags ?? [],
-            'publishedAt' => $this->published_at?->format('d/m/Y'),
-        ];
-    }
-}
-```
+**Frontend Structure:**
+- resources/js/components - Reusable Vue components
+- resources/js/pages - Inertia page components
+- resources/css - Application styles
 
-### Models com Lógica de Domínio (DDD)
-
-Models podem conter regras de negócio quando faz sentido:
-
-```php
-// app/Models/Post.php
-class Post extends Model
-{
-    public function generateSlug(): void
-    {
-        $this->slug = Str::slug($this->title);
-    }
-
-    public function publish(): void
-    {
-        $this->is_published = true;
-        $this->published_at = now();
-        $this->save();
-    }
-
-    public function addTag(string $tag): void
-    {
-        $tags = $this->tags ?? [];
-        if (!in_array($tag, $tags)) {
-            $tags[] = $tag;
-            $this->tags = $tags;
-            $this->save();
-        }
-    }
-}
-```
+**Database Structure:**
+- database/migrations - Database schema definitions
+- database/factories - Model factories for testing and seeding
+- database/seeders - Database seeders
 
 ## Database Schema
 
-**profiles**
-- id, name, bio, photo, is_active, timestamps
+The application uses four main tables:
 
-**links**
-- id, profile_id (FK), title, description, url, icon, order, is_active, timestamps
+**profiles** - User profile information including name, bio, photo, and active status
 
-**posts**
-- id, profile_id (FK), title, slug (unique), excerpt, content, author, image, read_time, tags (json), published_at, is_published, timestamps
+**links** - Social media and external links associated with profiles, with support for custom icons, descriptions, ordering, and activation status
 
-**newsletter_subscriptions**
-- id, email (unique), name, is_active, subscribed_at, unsubscribed_at, timestamps
+**posts** - Blog posts with title, slug, excerpt, content, author, featured image, read time estimation, tags stored as JSON, and publication status
 
-## Personalização
+**newsletter_subscriptions** - Email subscriptions with name, email, subscription status, and subscription/unsubscription timestamps
 
-### Editando o Perfil Principal
+All tables include timestamps and appropriate foreign key relationships with cascade deletes where needed.
 
-Edite o seeder para personalizar seu perfil e links:
+## Available Routes
 
-```php
-// database/seeders/DatabaseSeeder.php
-$profile = Profile::factory()->create([
-    'name' => 'Seu Nome',
-    'bio' => 'Sua bio aqui...',
-    'photo' => null, // ou caminho para sua foto
-    'is_active' => true,
-]);
-```
+**Frontend Routes:**
+- GET / - Homepage displaying profile, links, and recent posts
+- GET /posts/{slug} - Individual post page
 
-### Customizando Links
+**API Routes:**
+- POST /api/newsletter/subscribe - Newsletter subscription endpoint accepting email and optional name
 
-Edite os links sociais no seeder:
+## Configuration
 
-```php
-Link::factory()->create([
-    'profile_id' => $profile->id,
-    'title' => 'GitHub',
-    'description' => 'Meus projetos open source',
-    'url' => 'https://github.com/seu-usuario',
-    'icon' => 'github',
-    'order' => 0,
-    'is_active' => true,
-]);
-```
+### Email Setup
 
-### Criando Novos Posts
+To enable newsletter email functionality, configure your mail driver in the .env file. The application supports Mailtrap for development and any SMTP service for production. Set MAIL_MAILER, MAIL_HOST, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD, and MAIL_FROM_ADDRESS.
 
-Via Tinker:
+### Customization
 
-```bash
-php artisan tinker
-```
+Edit database/seeders/DatabaseSeeder.php to customize your profile information, social links, and initial posts. After editing, run php artisan migrate:fresh --seed to reset the database with your changes.
 
-```php
-$profile = Profile::first();
-$post = $profile->posts()->create([
-    'title' => 'Meu Artigo',
-    'slug' => 'meu-artigo',
-    'excerpt' => 'Breve descrição do artigo...',
-    'content' => '<p>Conteúdo HTML do artigo...</p>',
-    'author' => 'Seu Nome',
-    'read_time' => 5,
-    'tags' => ['Laravel', 'Vue.js'],
-    'is_published' => true,
-    'published_at' => now(),
-]);
-```
+## Development
 
-Ou usando o método do model:
+Run both servers in separate terminals during development. The Laravel server handles backend requests while Vite provides hot module replacement for frontend changes.
 
-```php
-$post->publish(); // Publica o post
-$post->addTag('TypeScript'); // Adiciona uma tag
-$post->generateSlug(); // Gera slug automaticamente
-```
+For production deployment, build assets with npm run build and optimize Laravel with php artisan optimize.
 
-## Rotas Disponíveis
+## License
 
-### Frontend (Inertia.js)
-- `GET /` - Página principal com perfil, links e posts
-- `GET /posts/{slug}` - Visualização de post individual
-
-### API
-- `POST /api/newsletter/subscribe` - Inscrição na newsletter
-  - Body: `{ "email": "email@example.com", "name": "Nome (opcional)" }`
-  - Response: `{ "message": "...", "data": {...} }`
-
-## Componentes Vue
-
-### LinkCard.vue
-Componente para exibir um card de link social:
-```vue
-<LinkCard :link="link" />
-```
-
-### PostCard.vue
-Componente para exibir um card de post na listagem:
-```vue
-<PostCard :post="post" />
-```
-
-### NewsletterForm.vue
-Formulário de inscrição na newsletter com validação e feedback:
-```vue
-<NewsletterForm />
-```
-
-## Testes
-
-```bash
-php artisan test
-```
-
-## Build de Produção
-
-```bash
-npm run build
-php artisan optimize
-```
-
-## Segurança
-
-- ✅ Proteção CSRF em todos os formulários
-- ✅ Validação Laravel em todas as entradas
-- ✅ Proteção contra SQL injection via Eloquent
-- ✅ Proteção XSS com sanitização de conteúdo
-- ✅ Form Requests com mensagens personalizadas
-- ✅ Rate limiting em endpoints públicos
-
-## Deploy
-
-1. Configure as variáveis de ambiente de produção
-2. Execute `php artisan migrate --force`
-3. Execute `php artisan db:seed --force`
-4. Compile os assets: `npm run build`
-5. Otimize: `php artisan optimize`
-6. Configure workers de fila se necessário
-7. Configure cron jobs se necessário
-
-## Contribuindo
-
-Pull requests são bem-vindos! Para mudanças maiores, abra uma issue primeiro para discutir o que você gostaria de mudar.
-
-## Licença
-
-MIT License. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
-
-**Desenvolvido com ❤️ usando Laravel + Vue.js + Inertia.js**
+MIT License
