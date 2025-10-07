@@ -10,6 +10,16 @@ class PostResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        // Handle both external URLs and local storage paths for image
+        $imageUrl = null;
+        if ($this->image) {
+            if (filter_var($this->image, FILTER_VALIDATE_URL)) {
+                $imageUrl = $this->image; // External URL
+            } else {
+                $imageUrl = Storage::url($this->image); // Local storage
+            }
+        }
+
         return [
             'id' => $this->id,
             'title' => $this->title,
@@ -17,7 +27,7 @@ class PostResource extends JsonResource
             'excerpt' => $this->excerpt,
             'content' => $this->content,
             'author' => $this->author,
-            'image' => $this->image ? Storage::url($this->image) : null,
+            'image' => $imageUrl,
             'readTime' => $this->read_time ? "{$this->read_time} min" : null,
             'readTimeMinutes' => $this->read_time,
             'tags' => $this->tags ?? [],

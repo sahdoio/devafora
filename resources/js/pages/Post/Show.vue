@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3'
 import { ArrowLeftIcon, ClockIcon } from '@heroicons/vue/24/outline'
+import { onMounted, nextTick } from 'vue'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/monokai.css'
 
 interface Post {
   id: number
@@ -18,6 +21,14 @@ interface Post {
 defineProps<{
   post: Post
 }>()
+
+onMounted(() => {
+  nextTick(() => {
+    document.querySelectorAll('pre code').forEach((block) => {
+      hljs.highlightElement(block as HTMLElement)
+    })
+  })
+})
 </script>
 
 <template>
@@ -80,7 +91,7 @@ defineProps<{
 
         <!-- Content -->
         <div
-          class="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-p:text-gray-300 prose-a:text-blue-400 prose-strong:text-white prose-code:text-blue-400"
+          class="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-p:text-gray-300 prose-a:text-blue-400 prose-strong:text-white prose-code:rounded prose-code:bg-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-blue-400 prose-pre:overflow-x-auto prose-pre:rounded-xl prose-pre:bg-slate-900 prose-pre:p-0 prose-img:rounded-xl"
           v-html="post.content"
         ></div>
 

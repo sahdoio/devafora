@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\DB;
 
 class SubscribeToNewsletterAction
 {
+    public function __construct(
+        private SendWelcomeEmailAction $sendWelcomeEmail
+    ) {}
+
     public function execute(string $email, ?string $name = null): NewsletterSubscription
     {
         return DB::transaction(function () use ($email, $name) {
@@ -16,8 +20,14 @@ class SubscribeToNewsletterAction
                 return $subscription;
             }
 
+            $isNewSubscription = !$subscription->exists;
+
             $subscription->name = $name ?? $subscription->name;
             $subscription->subscribe();
+
+            if ($isNewSubscription) {
+                $this->sendWelcomeEmail->execute($subscription);
+            }
 
             return $subscription;
         });

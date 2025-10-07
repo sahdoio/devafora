@@ -15,7 +15,7 @@ class PostController extends Controller
         $post = $getPost->execute($slug);
 
         return Inertia::render('Post/Show', [
-            'post' => PostResource::make($post),
+            'post' => PostResource::make($post)->resolve(),
         ]);
     }
 }

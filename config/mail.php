@@ -79,6 +79,16 @@ return [
             'transport' => 'array',
         ],
 
+        'mailtrap' => [
+            'transport' => 'smtp',
+            'host' => env('MAILTRAP_HOST', 'sandbox.smtp.mailtrap.io'),
+            'port' => env('MAILTRAP_PORT', 2525),
+            'username' => env('MAILTRAP_USERNAME'),
+            'password' => env('MAILTRAP_PASSWORD'),
+            'encryption' => env('MAILTRAP_ENCRYPTION', 'tls'),
+            'timeout' => null,
+        ],
+
         'failover' => [
             'transport' => 'failover',
             'mailers' => [
