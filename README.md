@@ -1,152 +1,85 @@
-# DevAfora - Linktree Clone com Laravel & Vue.js
+# DevAfora
 
-Um agregador de links personalizado estilo Linktree, construído com arquitetura limpa e tecnologias modernas. Apresenta um design dark elegante, blog integrado, newsletter com Postmark e código totalmente testável seguindo os princípios de Clean Architecture.
+A customizable link aggregator built with Laravel 11, Vue 3, and Inertia.js. Features a dark-themed interface, integrated blog system, and newsletter functionality powered by Postmark.
 
 ![Laravel](https://img.shields.io/badge/Laravel-11-FF2D20?style=flat&logo=laravel&logoColor=white)
 ![Vue.js](https://img.shields.io/badge/Vue.js-3-4FC08D?style=flat&logo=vue.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat&logo=typescript&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38B2AC?style=flat&logo=tailwind-css&logoColor=white)
 
-## ✨ Features
+## Features
 
-- 🔗 **Agregador de Links** - Centralize todos seus links sociais em um único lugar
-- 📝 **Blog Integrado** - Sistema completo de blog com suporte a Markdown/HTML
-- 💌 **Newsletter** - Integração com Postmark para emails transacionais
-- 🎨 **Design Moderno** - Interface dark elegante com animações suaves
-- 📱 **Responsivo** - Funciona perfeitamente em desktop e mobile
-- ⚡ **SPA com Inertia.js** - Experiência de Single Page Application sem APIs REST
-- 🏗️ **Arquitetura Limpa** - Actions, Resources e Controllers magros
-- 🔒 **Type Safe** - TypeScript no frontend para maior segurança
-- 📊 **Otimizado** - Eager loading, query optimization e asset bundling
+- Link aggregator with sortable, toggleable links
+- Blog system with HTML/Markdown support
+- Newsletter subscription with Postmark integration
+- Responsive dark-themed UI
+- SPA architecture using Inertia.js
+- Actions pattern for business logic isolation
+- TypeScript for type safety
+- Optimized queries with eager loading
 
-## 🛠️ Stack Tecnológico
+## Tech Stack
 
-### Backend
-- **Laravel 11** - Framework PHP com Eloquent ORM
-- **SQLite** - Banco de dados leve e portátil
-- **Postmark** - Serviço de email transacional
-- **Actions Pattern** - Lógica de negócio isolada e reutilizável
+**Backend:** Laravel 11, SQLite, Postmark
+**Frontend:** Vue 3, TypeScript, Inertia.js, Tailwind CSS 4, Vite
 
-### Frontend
-- **Vue.js 3** - Framework JavaScript reativo
-- **TypeScript** - Superset tipado do JavaScript
-- **Inertia.js** - Adapter para SPAs com Laravel
-- **Tailwind CSS 4** - Framework CSS utility-first
-- **Vite** - Build tool ultrarrápido
-
-## 📋 Pré-requisitos
+## Requirements
 
 - PHP 8.2+
 - Composer
-- Node.js 18+ & NPM
+- Node.js 18+
 - SQLite3
 
-## 🚀 Instalação
+## Installation
 
-1. **Clone o repositório**
 ```bash
 git clone https://github.com/sahdoio/devafora.git
 cd devafora
-```
-
-2. **Instale as dependências PHP**
-```bash
 composer install
-```
-
-3. **Instale as dependências JavaScript**
-```bash
 npm install
-```
-
-4. **Configure o ambiente**
-```bash
 cp .env.example .env
 php artisan key:generate
-```
-
-5. **Configure o banco de dados**
-```bash
 touch database/database.sqlite
 php artisan migrate --seed
 ```
 
-6. **Configure o Postmark (opcional)**
-
-Adicione suas credenciais no `.env`:
+Configure Postmark (optional) in `.env`:
 ```env
 MAIL_MAILER=postmark
-MAIL_FROM_NAME='Seu Nome'
-MAIL_FROM_ADDRESS=seu@email.com
-MAIL_CC=copia@email.com
-POSTMARK_TOKEN='seu-token-aqui'
+MAIL_FROM_NAME='Your Name'
+MAIL_FROM_ADDRESS=your@email.com
+MAIL_CC=copy@email.com
+POSTMARK_TOKEN='your-token-here'
 ```
 
-7. **Inicie o servidor de desenvolvimento**
-
-Em um terminal:
+Start development servers:
 ```bash
 php artisan serve
-```
-
-Em outro terminal:
-```bash
 npm run dev
 ```
 
-Acesse: `http://localhost:8000`
+Access at `http://localhost:8000`
 
-## 📁 Estrutura do Projeto
+## Project Structure
 
 ```
 app/
-├── Actions/
-│   └── Newsletter/              # Lógica de negócio isolada
-│       ├── SubscribeToNewsletterAction.php
-│       └── SendNewsletterWelcomeEmailAction.php
-├── Http/
-│   ├── Controllers/
-│   │   └── Frontend/            # Controllers para frontend
-│   │       ├── HomeController.php
-│   │       ├── BlogController.php
-│   │       └── NewsletterController.php
-│   └── Resources/               # Camada de apresentação
-│       ├── ProfileResource.php
-│       ├── LinkResource.php
-│       ├── PostResource.php
-│       └── NewsletterSubscriptionResource.php
-├── Models/                      # Models Eloquent com lógica de domínio
-│   ├── Profile.php
-│   ├── Link.php
-│   ├── Post.php
-│   └── NewsletterSubscription.php
+├── Actions/Newsletter/          # Business logic
+├── Http/Controllers/Frontend/   # Frontend controllers
+├── Http/Resources/              # API resources
+├── Models/                      # Eloquent models
 └── Mail/                        # Mailables
-    └── NewsletterWelcomeMail.php
 
 resources/
-├── js/
-│   ├── components/              # Componentes Vue reutilizáveis
-│   │   ├── LinkCard.vue
-│   │   ├── Newsletter.vue
-│   │   ├── PostPreview.vue
-│   │   └── SocialLink.vue
-│   ├── layouts/                 # Layouts da aplicação
-│   │   └── PublicLayout.vue
-│   └── pages/                   # Páginas Inertia
-│       ├── Home.vue
-│       ├── Blog.vue
-│       └── Welcome.vue
-└── views/
-    └── emails/                  # Templates de email
-        └── newsletter/
-            └── welcome.blade.php
+├── js/components/               # Vue components
+├── js/layouts/                  # Application layouts
+├── js/pages/                    # Inertia pages
+└── views/emails/                # Email templates
 ```
 
-## 🏗️ Arquitetura
+## Architecture
 
-### Actions Pattern
-
-Toda lógica de negócio está encapsulada em Actions, mantendo controllers limpos:
+Business logic is isolated in Action classes:
 
 ```php
 class SubscribeToNewsletterAction
@@ -171,9 +104,7 @@ class SubscribeToNewsletterAction
 }
 ```
 
-### Resources
-
-Laravel Resources transformam Models em JSON estruturado:
+Data presentation through Laravel Resources:
 
 ```php
 class PostResource extends JsonResource
@@ -186,19 +117,15 @@ class PostResource extends JsonResource
             'slug' => $this->slug,
             'excerpt' => $this->excerpt,
             'content' => $this->content,
-            'author' => $this->author,
             'publishedAt' => $this->published_at?->format('Y-m-d'),
             'readTime' => $this->read_time ? "{$this->read_time} min" : null,
-            'image' => $this->image,
             'tags' => $this->tags,
         ];
     }
 }
 ```
 
-### Models com Lógica de Domínio
-
-Models contêm métodos de negócio relevantes ao domínio:
+Models with domain logic:
 
 ```php
 class Post extends Model
@@ -217,94 +144,45 @@ class Post extends Model
 }
 ```
 
-## 🗄️ Banco de Dados
+## Database Schema
 
-### Tabelas Principais
+**profiles**
+- id, name, bio, photo, is_active, timestamps
 
-**profiles** - Informações do perfil
-```sql
-- id
-- name
-- bio
-- photo
-- is_active
-- timestamps
-```
+**links**
+- id, profile_id (FK), title, description, url, icon, order, is_active, timestamps
 
-**links** - Links sociais ordenáveis
-```sql
-- id
-- profile_id (FK)
-- title
-- description
-- url
-- icon
-- order
-- is_active
-- timestamps
-```
+**posts**
+- id, profile_id (FK), title, slug (unique), excerpt, content, author, image, read_time, tags (json), published_at, is_published, timestamps
 
-**posts** - Artigos do blog
-```sql
-- id
-- profile_id (FK)
-- title
-- slug (unique)
-- excerpt
-- content (longtext)
-- author
-- image
-- read_time
-- tags (json)
-- published_at
-- is_published
-- timestamps
-```
+**newsletter_subscriptions**
+- id, email (unique), name, is_active, subscribed_at, unsubscribed_at, timestamps
 
-**newsletter_subscriptions** - Assinantes da newsletter
-```sql
-- id
-- email (unique)
-- name
-- is_active
-- subscribed_at
-- unsubscribed_at
-- timestamps
-```
+## Customization
 
-## 🎨 Customização
-
-### Alterar Perfil
-
-Edite o seeder `ProfileSeeder.php`:
+Edit seeders to customize profile, links, and posts:
 
 ```php
+// ProfileSeeder.php
 Profile::factory()->create([
-    'name' => 'Seu Nome',
-    'bio' => 'Sua bio aqui...',
-    'photo' => '/images/seu-perfil.jpg',
+    'name' => 'Your Name',
+    'bio' => 'Your bio...',
+    'photo' => '/images/your-photo.jpg',
 ]);
-```
 
-### Adicionar Links
-
-Edite o seeder `LinkSeeder.php`:
-
-```php
+// LinkSeeder.php
 $links = [
     [
         'title' => 'GitHub',
-        'description' => 'Meus projetos',
-        'url' => 'https://github.com/seu-usuario',
+        'description' => 'My projects',
+        'url' => 'https://github.com/username',
         'icon' => 'github',
         'order' => 0,
     ],
 ];
 ```
 
-### Criar Novo Post
-
-Use o Tinker ou crie via seeder:
+Create new posts via Tinker:
 
 ```bash
 php artisan tinker
@@ -313,11 +191,11 @@ php artisan tinker
 ```php
 $profile = Profile::first();
 $profile->posts()->create([
-    'title' => 'Meu Novo Artigo',
-    'slug' => 'meu-novo-artigo',
-    'excerpt' => 'Descrição curta...',
-    'content' => '<p>Conteúdo HTML aqui...</p>',
-    'author' => 'Seu Nome',
+    'title' => 'My Article',
+    'slug' => 'my-article',
+    'excerpt' => 'Brief description...',
+    'content' => '<p>HTML content...</p>',
+    'author' => 'Your Name',
     'read_time' => 5,
     'tags' => ['Tag1', 'Tag2'],
     'is_published' => true,
@@ -325,98 +203,37 @@ $profile->posts()->create([
 ]);
 ```
 
-## 🧪 Testes
+## Testing
 
 ```bash
 php artisan test
 ```
 
-## 📦 Build para Produção
+## Production Build
 
 ```bash
 npm run build
 php artisan optimize
 ```
 
-## 🔒 Segurança
+## Security
 
-- CSRF Protection em todos os formulários
-- Validação de dados com Laravel Validation
-- SQL Injection protection via Eloquent
-- XSS Protection com `v-html` apenas em conteúdo confiável
-- Rate Limiting nos endpoints públicos
+- CSRF protection on all forms
+- Laravel validation on all inputs
+- SQL injection protection via Eloquent
+- XSS protection with trusted content only
+- Rate limiting on public endpoints
 
-## 🚀 Deploy
+## Deployment
 
-### Requisitos de Produção
-- PHP 8.2+
-- Composer
-- Node.js (para build)
-- SQLite ou MySQL/PostgreSQL
-- Nginx ou Apache
+1. Set up production environment variables
+2. Run `php artisan migrate --force`
+3. Run `php artisan db:seed --force`
+4. Build assets with `npm run build`
+5. Optimize with `php artisan optimize`
+6. Configure queue worker for background jobs
+7. Set up cron for scheduled tasks if needed
 
-### Passos para Deploy
+## License
 
-1. Clone e configure o ambiente
-2. Configure variáveis de ambiente de produção
-3. Execute migrations: `php artisan migrate --force`
-4. Execute seeders: `php artisan db:seed --force`
-5. Build assets: `npm run build`
-6. Otimize: `php artisan optimize`
-7. Configure queue worker para emails
-8. Configure cron para schedule (se necessário)
-
-## 🤝 Contribuindo
-
-Contribuições são bem-vindas! Por favor:
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
-## 📝 Boas Práticas Implementadas
-
-- ✅ **Actions Pattern** - Lógica de negócio isolada
-- ✅ **Resources** - Camada de apresentação consistente
-- ✅ **Type Safety** - TypeScript no frontend
-- ✅ **Eager Loading** - Evita N+1 queries
-- ✅ **Transactions** - Garantia de consistência
-- ✅ **Queue Jobs** - Emails enviados em background
-- ✅ **Validation** - Dados sempre validados
-- ✅ **SOLID Principles** - Código limpo e manutenível
-
-## 📚 Aprendizados
-
-Este projeto demonstra:
-- Arquitetura limpa com Laravel
-- Integração Vue.js + TypeScript com Inertia
-- Padrões de design (Actions, Resources, Repository)
-- Integração com serviços externos (Postmark)
-- Otimização de performance
-- Code organization e best practices
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
-## 👤 Autor
-
-**Lucas Sahdo**
-
-- GitHub: [@sahdoio](https://github.com/sahdoio)
-- Twitter: [@devafora](https://twitter.com/devafora)
-- YouTube: [@devafora](https://youtube.com/@devafora)
-
-## 🙏 Agradecimentos
-
-- Laravel Team
-- Vue.js Team
-- Inertia.js Team
-- Tailwind CSS Team
-- Toda a comunidade open source
-
----
-
-⭐️ Se este projeto foi útil, considere dar uma estrela no GitHub!
+MIT License. See [LICENSE](LICENSE) file for details.
