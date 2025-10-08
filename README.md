@@ -1,138 +1,328 @@
 # DevAfora
 
-A customizable link aggregator built with Laravel 11, Vue 3, and Inertia.js featuring a modern dark interface, integrated blog system, and newsletter functionality.
+> A modern, customizable link-in-bio platform built with Laravel 11, Vue 3, and Inertia.js
 
-## Requirements
+Transform your social media presence with a sleek, dark-themed platform that combines link aggregation, blogging, and newsletter management - all in one place.
 
-- PHP 8.2 or higher
-- Composer
-- Node.js 18 or higher
-- SQLite3
 
-## Installation
+## ✨ Features
 
-Clone the repository and install dependencies:
+- **🔗 Smart Link Management** - Organize and showcase your important links with custom icons and descriptions
+- **📝 Integrated Blog System** - Share long-form content with markdown support, syntax highlighting, and live preview
+- **💌 Newsletter Platform** - Build your audience with built-in email subscription management via Postmark
+- **🎨 Theme Customization** - Personalize your brand with a complete color management system
+- **🌙 Dark Mode First** - Beautiful, modern dark interface designed for readability
+- **🔒 Secured Admin Panel** - Registration disabled by default - invite-only access
+- **⚡ Lightning Fast** - Built with Vite for instant hot reload and optimized production builds
+- **📱 Fully Responsive** - Perfect experience across all devices
 
-```
+![home.png](docs/home.png)
+
+![login.png](docs/login.png)
+
+![dash.png](docs/dash.png)
+
+## 🚀 Quick Start
+
+```bash
+# Clone the repository
 git clone https://github.com/sahdoio/devafora.git
 cd devafora
+
+# Install dependencies
 composer install
 npm install
-```
 
-Configure environment and database:
-
-```
+# Setup environment
 cp .env.example .env
 php artisan key:generate
 touch database/database.sqlite
+
+# Migrate and seed
 php artisan migrate --seed
+
+# Start development
+php artisan serve & npm run dev
 ```
 
-Start development servers:
+Visit http://localhost:8000 and start customizing!
 
-```
-php artisan serve
-npm run dev
-```
+## 🛠️ Tech Stack
 
-Access the application at http://localhost:8000
+**Backend:**
+- Laravel 11 - Modern PHP framework
+- SQLite - Lightweight database
+- Fortify - Authentication & security
+- Postmark - Transactional emails
 
-## Architecture
+**Frontend:**
+- Vue 3 + TypeScript - Type-safe reactive UI
+- Inertia.js - SPA without the API complexity
+- Tailwind CSS 4 - Utility-first styling
+- Vite - Next-gen build tool
+- Marked.js - Markdown parsing
+- Highlight.js - Code syntax highlighting
 
-This project follows an Action-based architecture pattern where business logic is completely isolated from controllers. The separation of concerns is strictly enforced across the entire application.
+## 📋 Requirements
+
+- PHP 8.2+
+- Composer
+- Node.js 18+
+- SQLite3
+
+## 🏗️ Architecture
+
+DevAfora follows a clean, action-based architecture that separates concerns and keeps code maintainable.
 
 ### Action Pattern
 
-All business logic resides in Action classes organized by domain. Each Action has a single execute method that performs one specific operation. Actions are injected into controllers via dependency injection and can be composed together for complex workflows.
+Business logic lives in dedicated Action classes with a single `execute()` method:
 
-Actions are located in app/Actions and organized into domain folders such as Profile, Links, Posts, and Newsletter. For example, subscribing to a newsletter involves the SubscribeToNewsletterAction which handles transaction management, duplicate checking, and calling other actions like SendWelcomeEmailAction.
+```
+app/Actions/
+├── Newsletter/
+│   ├── SubscribeToNewsletterAction.php
+│   └── SendWelcomeEmailAction.php
+├── Post/
+│   ├── CreatePostAction.php
+│   └── PublishPostAction.php
+└── Link/
+    └── ReorderLinksAction.php
+```
 
-### Controllers
+### Thin Controllers
 
-Controllers are thin by design. They only receive Actions via dependency injection, call their execute methods, and return responses. Frontend controllers return Inertia.js views while API controllers return JSON responses.
+Controllers are lightweight - they inject Actions and return responses:
 
-Controllers are separated into Frontend and Api namespaces. Frontend controllers at app/Http/Controllers/Frontend handle web routes and return Inertia responses. Api controllers at app/Http/Controllers/Api handle API routes and return JSON responses.
+```php
+public function subscribe(
+    SubscribeNewsletterRequest $request,
+    SubscribeToNewsletterAction $action
+) {
+    $subscription = $action->execute($request->validated());
+    return response()->json(['message' => 'Subscribed!']);
+}
+```
 
 ### Resources Layer
 
-All data transformation happens through Laravel Resources before reaching the frontend. This creates a consistent API contract and handles things like date formatting, URL generation, and field selection. Every model has at least one Resource class, and some have multiple for different contexts.
+All API responses go through Laravel Resources for consistent data transformation:
 
-Resources are located in app/Http/Resources. For example, PostResource provides full post data for individual pages while PostListResource provides a lighter version for post listings.
+```
+app/Http/Resources/
+├── PostResource.php
+├── PostListResource.php
+├── LinkResource.php
+└── ProfileResource.php
+```
 
-### Models with Domain Logic
+### Domain-Driven Models
 
-Models contain domain-specific business methods using Domain-Driven Design principles. Methods like publish, subscribe, addTag, and generateSlug encapsulate business rules that belong to the entity itself. Database queries are handled through Eloquent scopes for reusability.
+Models contain domain logic using DDD principles:
 
-Models are located in app/Models and include Profile, Link, Post, and NewsletterSubscription. Each model defines its relationships, scopes, and domain methods.
+```php
+class Post extends Model
+{
+    public function publish(): void
+    public function generateSlug(): void
+    public function scopePublished(Builder $query): Builder
+}
+```
 
-### Frontend Architecture
+## 📂 Project Structure
 
-The frontend uses Vue 3 with TypeScript and Inertia.js for a seamless SPA experience without building a separate API. Components are organized into reusable pieces like LinkCard, PostCard, and NewsletterForm. Pages are Inertia views that receive data as props from controllers.
+```
+devafora/
+├── app/
+│   ├── Actions/           # Business logic
+│   ├── Http/
+│   │   ├── Controllers/   # Thin controllers
+│   │   ├── Resources/     # API transformers
+│   │   └── Requests/      # Form validation
+│   └── Models/            # Eloquent models
+├── resources/
+│   ├── js/
+│   │   ├── components/    # Vue components
+│   │   ├── pages/         # Inertia pages
+│   │   └── layouts/       # Layout components
+│   └── css/               # Tailwind styles
+├── database/
+│   ├── migrations/        # Schema definitions
+│   ├── factories/         # Test data factories
+│   └── seeders/           # Database seeders
+└── tests/                 # Feature & unit tests
+```
 
-Pages are located in resources/js/pages while reusable components are in resources/js/components. The application uses Tailwind CSS 4 for styling and Vite for asset bundling.
+## 🗄️ Database Schema
 
-## Project Structure
+### Core Tables
 
-The application is organized into clear layers:
+**profiles** - User profiles with bio, photo, and social links
+**links** - Ordered social media links with icons and descriptions
+**posts** - Blog posts with markdown content, tags, and featured images
+**newsletter_subscriptions** - Email subscribers with status tracking
+**settings** - Dynamic app configuration (colors, theme, etc.)
 
-**Backend Structure:**
-- app/Actions - Business logic organized by domain
-- app/Http/Controllers/Frontend - Web controllers returning Inertia views
-- app/Http/Controllers/Api - API controllers returning JSON
-- app/Http/Resources - Data transformation layer
-- app/Http/Requests - Form validation
-- app/Models - Eloquent models with domain methods
+## 🎨 Customization
 
-**Frontend Structure:**
-- resources/js/components - Reusable Vue components
-- resources/js/pages - Inertia page components
-- resources/css - Application styles
+### Theme Colors
 
-**Database Structure:**
-- database/migrations - Database schema definitions
-- database/factories - Model factories for testing and seeding
-- database/seeders - Database seeders
+Access `/admin/settings/theme` to customize your brand colors:
 
-## Database Schema
+- Primary, Secondary, and Accent colors
+- Background colors for cards and sections
+- Text colors for different contexts
+- Border colors
 
-The application uses four main tables:
+All changes are applied instantly across the entire application!
 
-**profiles** - User profile information including name, bio, photo, and active status
+### Profile Setup
 
-**links** - Social media and external links associated with profiles, with support for custom icons, descriptions, ordering, and activation status
+Edit your profile in `database/seeders/ProfileSeeder.php`:
 
-**posts** - Blog posts with title, slug, excerpt, content, author, featured image, read time estimation, tags stored as JSON, and publication status
+```php
+Profile::create([
+    'name' => 'Your Name',
+    'bio' => 'Your bio here...',
+    'photo' => '/images/profile.jpeg',
+]);
+```
 
-**newsletter_subscriptions** - Email subscriptions with name, email, subscription status, and subscription/unsubscription timestamps
+### Adding Links
 
-All tables include timestamps and appropriate foreign key relationships with cascade deletes where needed.
+Customize your links in `database/seeders/LinkSeeder.php`:
 
-## Available Routes
+```php
+Link::create([
+    'profile_id' => 1,
+    'title' => 'GitHub',
+    'url' => 'https://github.com/yourname',
+    'icon' => '🐙',
+    'order' => 1,
+]);
+```
 
-**Frontend Routes:**
-- GET / - Homepage displaying profile, links, and recent posts
-- GET /posts/{slug} - Individual post page
+## 📧 Email Configuration
 
-**API Routes:**
-- POST /api/newsletter/subscribe - Newsletter subscription endpoint accepting email and optional name
+### Postmark Setup
 
-## Configuration
+1. Sign up at [Postmark](https://postmarkapp.com)
+2. Get your API token
+3. Add to `.env`:
 
-### Email Setup
+```env
+MAIL_MAILER=postmark
+POSTMARK_TOKEN=your-token-here
+MAIL_FROM_ADDRESS=hello@yourdomain.com
+MAIL_FROM_NAME="${APP_NAME}"
+```
 
-To enable newsletter email functionality, configure your mail driver in the .env file. The application supports Mailtrap for development and any SMTP service for production. Set MAIL_MAILER, MAIL_HOST, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD, and MAIL_FROM_ADDRESS.
+### Development Testing
 
-### Customization
+Use Mailtrap for testing emails in development:
 
-Edit database/seeders/DatabaseSeeder.php to customize your profile information, social links, and initial posts. After editing, run php artisan migrate:fresh --seed to reset the database with your changes.
+```env
+MAIL_MAILER=mailtrap
+MAILTRAP_HOST=sandbox.smtp.mailtrap.io
+MAILTRAP_PORT=2525
+MAILTRAP_USERNAME=your-username
+MAILTRAP_PASSWORD=your-password
+```
 
-## Development
+## 🚀 Deployment
 
-Run both servers in separate terminals during development. The Laravel server handles backend requests while Vite provides hot module replacement for frontend changes.
+### Laravel Cloud (ARM64)
 
-For production deployment, build assets with npm run build and optimize Laravel with php artisan optimize.
+This project is optimized for Laravel Cloud with ARM64 support:
 
-**## License
+```json
+{
+  "optionalDependencies": {
+    "@rollup/rollup-linux-arm64-gnu": "4.9.5",
+    "@tailwindcss/oxide-linux-arm64-gnu": "^4.0.1",
+    "lightningcss-linux-arm64-gnu": "^1.29.1"
+  }
+}
+```
 
-MIT License**
+### Production Build
+
+```bash
+# Build assets
+npm run build
+
+# Optimize Laravel
+php artisan optimize
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+
+# Run migrations
+php artisan migrate --force
+```
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+php artisan test
+
+# Run specific test suite
+php artisan test --filter=Auth
+
+# Run with coverage
+php artisan test --coverage
+```
+
+**Test Results:** 39 passed, 1 skipped (registration disabled)
+
+## 🔐 Security
+
+- Registration disabled by default (invite-only admin)
+- Two-factor authentication support via Fortify
+- Email verification required
+- Password confirmation for sensitive operations
+- Rate limiting on authentication endpoints
+- CSRF protection on all forms
+
+## 📝 Available Routes
+
+### Public Routes
+```
+GET  /                     # Homepage with links and posts
+GET  /posts/{slug}         # Individual blog post
+POST /api/newsletter/subscribe  # Newsletter subscription
+```
+
+### Admin Routes (Auth Required)
+```
+GET  /admin/dashboard      # Admin dashboard
+GET  /admin/posts          # Manage posts
+GET  /admin/links          # Manage links
+GET  /admin/settings/theme # Theme customization
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is open-sourced software licensed under the [MIT license](LICENSE).
+
+## 🙏 Acknowledgments
+
+- Built with [Laravel](https://laravel.com)
+- Powered by [Vue.js](https://vuejs.org)
+- Styled with [Tailwind CSS](https://tailwindcss.com)
+- Icons from [Lucide](https://lucide.dev)
+
+---
+
+**Made with ❤️ by [DevAfora](https://github.com/sahdoio/devafora)**
