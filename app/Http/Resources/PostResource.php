@@ -22,19 +22,24 @@ class PostResource extends JsonResource
 
         return [
             'id' => $this->id,
+            'profile_id' => $this->profile_id,
             'title' => $this->title,
             'slug' => $this->slug,
             'excerpt' => $this->excerpt,
             'content' => $this->content,
             'author' => $this->author,
             'image' => $imageUrl,
-            'readTime' => $this->read_time ? "{$this->read_time} min" : null,
-            'readTimeMinutes' => $this->read_time,
+            'read_time' => $this->read_time,
             'tags' => $this->tags ?? [],
-            'publishedAt' => $this->published_at?->format('d/m/Y'),
-            'publishedAtFull' => $this->published_at?->toISOString(),
-            'isPublished' => $this->is_published,
-            'createdAt' => $this->created_at?->toISOString(),
+            'published_at' => $this->published_at?->toISOString(),
+            'is_published' => $this->is_published,
+            'profile' => $this->whenLoaded('profile', function () {
+                return [
+                    'id' => $this->profile->id,
+                    'name' => $this->profile->name,
+                ];
+            }),
+            'created_at' => $this->created_at?->toISOString(),
         ];
     }
 }

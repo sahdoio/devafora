@@ -51,43 +51,40 @@ if (props.profile) {
   <div class="min-h-screen bg-gradient-to-b from-[#0a1628] via-[#0f2847] to-[#1e3a8a]">
 
     <!-- HEADER/PROFILE - Seção única sem separação visual -->
-    <section class="px-4 py-10">
+    <section class="px-4 py-6">
       <div class="mx-auto max-w-4xl">
         <div class="flex flex-col items-center text-center">
 
-          <!-- Profile Photo - FOTO REAL -->
-          <div class="mb-8">
-            <div class="h-32 w-32 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 p-1 shadow-2xl shadow-blue-500/30">
+          <!-- Profile Photo -->
+          <div class="mb-6">
+            <div class="h-40 w-40 rounded-full bg-gradient-to-br from-blue-300 to-blue-400 p-1 shadow-2xl shadow-blue-400/30">
               <img
-                v-if="profile?.photo"
-                :src="profile.photo"
-                :alt="profile.name"
+                :src="profile?.photo || '/images/profile.jpeg'"
+                :alt="profile?.name || 'DevAfora'"
                 class="h-full w-full rounded-full object-cover"
               />
-              <div v-else class="flex h-full w-full items-center justify-center rounded-full bg-slate-800 text-4xl font-bold text-white">
-                {{ profile?.name?.[0] || 'D' }}
-              </div>
             </div>
           </div>
 
-          <!-- Name -->
-          <h1 class="mb-6 bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-5xl font-bold text-transparent md:text-6xl">
-            {{ profile?.name || 'DevAfora' }}
-          </h1>
+          <!-- Logo -->
+          <div class="mb-4">
+            <img
+              src="/images/logo.png"
+              :alt="profile?.name || 'DevAfora'"
+              class="h-20 w-auto md:h-24"
+            />
+          </div>
 
           <!-- Bio COMPLETA -->
-          <p v-if="profile?.bio" class="mx-auto max-w-3xl text-lg leading-relaxed text-gray-300">
-            {{ profile.bio }}
-          </p>
-          <p v-else class="mx-auto max-w-3xl text-lg leading-relaxed text-gray-300">
-            Engenheiro de Software Sênior com mais de uma década de experiência em desenvolvimento de software.
+          <p class="mx-auto max-w-3xl text-lg leading-relaxed text-gray-300">
+            {{ profile?.bio ?? '' }}
           </p>
         </div>
       </div>
     </section>
 
     <!-- LINKS - Cards LARGOS sem separação visual -->
-    <section class="px-4 py-6">
+    <section class="px-4 py-3">
       <div class="mx-auto max-w-2xl">
         <div class="space-y-3">
           <LinkCard v-for="link in links" :key="link.id" :link="link" />
@@ -112,19 +109,18 @@ if (props.profile) {
       </div>
     </section>
 
-    <!-- POSTS - Continuidade do design -->
-    <section class="px-4 py-12">
+    <!-- POSTS - Temporarily hidden for launch -->
+    <!-- <section class="px-4 py-12">
       <div class="mx-auto max-w-5xl">
         <h2 class="mb-8 text-center text-3xl font-bold text-white md:text-4xl">
           Últimos Posts
         </h2>
 
-        <!-- Posts Grid -->
         <div v-if="posts && posts.length > 0" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <PostCard v-for="post in posts" :key="post.id" :post="post" />
         </div>
       </div>
-    </section>
+    </section> -->
 
     <!-- FOOTER - Minimalista -->
     <footer class="border-t border-white/5 px-4 py-8">

@@ -133,6 +133,6 @@ Run both servers in separate terminals during development. The Laravel server ha
 
 For production deployment, build assets with npm run build and optimize Laravel with php artisan optimize.
 
-## License
+**## License
 
-MIT License
+MIT License**

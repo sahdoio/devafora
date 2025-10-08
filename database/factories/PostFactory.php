@@ -26,6 +26,9 @@ class PostFactory extends Factory
             'Performance em aplicações web',
         ]);
 
+        // Make title unique by appending a unique identifier
+        $uniqueTitle = $title . ' ' . fake()->unique()->numberBetween(1000, 9999);
+
         $content = $this->generateRichContent();
 
         // Generate banner image URL using Unsplash
@@ -35,8 +38,8 @@ class PostFactory extends Factory
 
         return [
             'profile_id' => Profile::factory(),
-            'title' => $title,
-            'slug' => Str::slug($title),
+            'title' => $uniqueTitle,
+            'slug' => Str::slug($uniqueTitle),
             'excerpt' => fake()->paragraph(2),
             'content' => $content,
             'author' => 'DevAfora',
