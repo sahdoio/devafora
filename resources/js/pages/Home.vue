@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3'
 import LinkCard from '@/components/LinkCard.vue'
-import PostCard from '@/components/PostCard.vue'
 import NewsletterForm from '@/components/NewsletterForm.vue'
 
 interface Profile {

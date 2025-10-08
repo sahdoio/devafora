@@ -14,7 +14,7 @@ defineProps<Props>();
 
 <template>
     <img
-        src="/images/logo_icon.png"
+        src="/images/logo_blue.png"
         alt="DevAfora"
         :class="className"
         v-bind="$attrs"

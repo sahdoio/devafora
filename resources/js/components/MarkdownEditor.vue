@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue';
+import { ref, computed, nextTick, onMounted, onUnmounted } from 'vue';
 import { marked } from 'marked';
 import hljs from 'highlight.js';
 import 'highlight.js/styles/monokai.css';
@@ -42,7 +42,7 @@ const content = computed({
 const htmlPreview = computed(() => {
     try {
         return marked(content.value || '');
-    } catch (error) {
+    } catch {
         return '<p class="text-red-500">Error parsing markdown</p>';
     }
 });

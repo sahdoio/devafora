@@ -17,7 +17,7 @@ interface LinkItem {
     };
 }
 
-const props = defineProps<{
+defineProps<{
     links: LinkItem[];
 }>();
 

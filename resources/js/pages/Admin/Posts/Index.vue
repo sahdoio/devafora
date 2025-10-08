@@ -18,7 +18,7 @@ interface PostItem {
     tags: string[];
 }
 
-const props = defineProps<{
+defineProps<{
     posts: PostItem[];
 }>();
 

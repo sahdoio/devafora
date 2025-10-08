@@ -19,7 +19,7 @@ interface Post {
     is_published: boolean;
 }
 
-const props = defineProps<{
+defineProps<{
     post: Post;
 }>();
 

@@ -87,7 +87,7 @@ const htmlPreview = computed(() => {
             return content;
         }
         return marked(content);
-    } catch (error) {
+    } catch {
         return '<p class="text-red-500">Error parsing markdown</p>';
     }
 });

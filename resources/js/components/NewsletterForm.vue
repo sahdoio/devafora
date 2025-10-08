@@ -43,7 +43,7 @@ const subscribe = async () => {
     } else {
       error.value = data.message || 'Ocorreu um erro. Tente novamente.'
     }
-  } catch (err) {
+  } catch {
     error.value = 'Erro ao conectar com o servidor. Tente novamente.'
   } finally {
     loading.value = false
