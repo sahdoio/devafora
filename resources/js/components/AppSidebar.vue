@@ -14,7 +14,7 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { Folder, LayoutGrid, Link2, FileText, Palette } from 'lucide-vue-next';
+import { Folder, LayoutGrid, Link2, FileText, Mail } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
@@ -34,9 +34,9 @@ const mainNavItems: NavItem[] = [
         icon: Link2,
     },
     {
-        title: 'Theme',
-        href: '/admin/settings/theme',
-        icon: Palette,
+        title: 'Newsletter',
+        href: '/admin/newsletter',
+        icon: Mail,
     },
 ];
 
