@@ -1,19 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Newsletter;
 
 use App\Models\NewsletterSubscription;
 
 class ToggleNewsletterStatusAction
 {
-    public function execute(NewsletterSubscription $subscription): NewsletterSubscription
+    public function execute(NewsletterSubscription $newsletterSubscription): NewsletterSubscription
     {
-        if ($subscription->isSubscribed()) {
-            $subscription->unsubscribe();
+        if ($newsletterSubscription->isSubscribed()) {
+            $newsletterSubscription->unsubscribe();
         } else {
-            $subscription->resubscribe();
+            $newsletterSubscription->resubscribe();
         }
 
-        return $subscription;
+        return $newsletterSubscription;
     }
 }

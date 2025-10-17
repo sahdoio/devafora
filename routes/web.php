@@ -11,6 +11,7 @@ use Inertia\Inertia;
 
 // Public Routes
 Route::get('/', HomeController::class)->name('home');
+Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
 Route::get('/posts/{slug}', [PostController::class, 'show'])->name('posts.show');
 
 // Admin redirect route
@@ -25,6 +26,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('links', AdminLinkController::class);
     Route::resource('posts', AdminPostController::class);
     Route::get('posts/{post}/preview', [AdminPostController::class, 'preview'])->name('posts.preview');
+    Route::post('posts/{post}/send-newsletter', [AdminPostController::class, 'sendNewsletter'])->name('posts.send-newsletter');
 
     // Newsletter
     Route::get('newsletter', [AdminNewsletterController::class, 'index'])->name('newsletter.index');

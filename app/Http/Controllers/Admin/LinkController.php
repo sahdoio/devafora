@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Admin;
 
 use App\Actions\Link\CreateLinkAction;
 use App\Actions\Link\DeleteLinkAction;
 use App\Actions\Link\UpdateLinkAction;
+use App\Data\LinkData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLinkRequest;
 use App\Http\Requests\UpdateLinkRequest;
@@ -42,9 +45,9 @@ class LinkController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreLinkRequest $request, CreateLinkAction $action)
+    public function store(StoreLinkRequest $storeLinkRequest, CreateLinkAction $createLinkAction)
     {
-        $action->execute($request->validated());
+        $createLinkAction->execute(LinkData::from($storeLinkRequest->validated()));
 
         return redirect()->route('admin.links.index')
             ->with('success', 'Link created successfully.');
@@ -76,9 +79,9 @@ class LinkController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateLinkRequest $request, Link $link, UpdateLinkAction $action)
+    public function update(UpdateLinkRequest $updateLinkRequest, Link $link, UpdateLinkAction $updateLinkAction)
     {
-        $action->execute($link, $request->validated());
+        $updateLinkAction->execute($link, LinkData::from($updateLinkRequest->validated()));
 
         return redirect()->route('admin.links.index')
             ->with('success', 'Link updated successfully.');
@@ -87,9 +90,9 @@ class LinkController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Link $link, DeleteLinkAction $action)
+    public function destroy(Link $link, DeleteLinkAction $deleteLinkAction)
     {
-        $action->execute($link);
+        $deleteLinkAction->execute($link);
 
         return redirect()->route('admin.links.index')
             ->with('success', 'Link deleted successfully.');

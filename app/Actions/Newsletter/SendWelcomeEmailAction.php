@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Newsletter;
 
 use App\Mail\NewsletterWelcomeMail;
@@ -8,9 +10,9 @@ use Illuminate\Support\Facades\Mail;
 
 class SendWelcomeEmailAction
 {
-    public function execute(NewsletterSubscription $subscription): void
+    public function execute(NewsletterSubscription $newsletterSubscription): void
     {
-        Mail::to($subscription->email)
-            ->send(new NewsletterWelcomeMail($subscription));
+        Mail::to($newsletterSubscription->email)
+            ->send(new NewsletterWelcomeMail($newsletterSubscription));
     }
 }

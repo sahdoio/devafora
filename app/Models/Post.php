@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,12 +25,14 @@ class Post extends Model
         'tags',
         'published_at',
         'is_published',
+        'newsletter_sent_at',
     ];
 
     protected $casts = [
         'tags' => 'array',
         'is_published' => 'boolean',
         'published_at' => 'datetime',
+        'newsletter_sent_at' => 'datetime',
         'read_time' => 'integer',
     ];
 
@@ -83,7 +87,7 @@ class Post extends Model
     public function removeTag(string $tag): void
     {
         $tags = $this->tags ?? [];
-        $this->tags = array_values(array_filter($tags, fn($t) => $t !== $tag));
+        $this->tags = array_values(array_filter($tags, fn($t): bool => $t !== $tag));
         $this->save();
     }
 }

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->json('tags')->nullable();
             $table->datetime('published_at')->nullable();
             $table->boolean('is_published')->default(false);
+            $table->timestamp('newsletter_sent_at')->nullable();
             $table->timestamps();
 
             $table->index(['profile_id', 'is_published']);

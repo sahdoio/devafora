@@ -2,6 +2,8 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { Eye, Edit, Mail, Trash2, CheckCircle } from 'lucide-vue-next';
+import { useConfirm } from '@/composables/useConfirm';
 
 interface PostItem {
     id: number;
@@ -11,6 +13,7 @@ interface PostItem {
     author: string;
     is_published: boolean;
     published_at: string | null;
+    newsletter_sent_at: string | null;
     profile: {
         id: number;
         name: string;
@@ -27,9 +30,56 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Posts', href: '/admin/posts' },
 ];
 
-const deletePost = (id: number) => {
-    if (confirm('Are you sure you want to delete this post?')) {
+const { confirm } = useConfirm();
+
+const deletePost = async (id: number) => {
+    const confirmed = await confirm({
+        title: 'Delete Post',
+        message: 'Are you sure you want to delete this post? This action cannot be undone.',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        variant: 'danger',
+    });
+
+    if (confirmed) {
         router.delete(`/admin/posts/${id}`);
+    }
+};
+
+const sendNewsletter = async (post: PostItem) => {
+    if (!post.is_published) {
+        await confirm({
+            title: 'Post Not Published',
+            message: 'Post must be published before sending newsletter.',
+            confirmText: 'OK',
+            cancelText: 'Close',
+            variant: 'warning',
+        });
+        return;
+    }
+
+    let confirmed = false;
+
+    if (post.newsletter_sent_at) {
+        confirmed = await confirm({
+            title: 'Newsletter Already Sent',
+            message: `Newsletter was already sent on ${formatDate(post.newsletter_sent_at)}. Are you sure you want to send it again?`,
+            confirmText: 'Send Again',
+            cancelText: 'Cancel',
+            variant: 'warning',
+        });
+    } else {
+        confirmed = await confirm({
+            title: 'Send Newsletter',
+            message: 'Are you sure you want to send this post to all active newsletter subscribers? This action cannot be undone.',
+            confirmText: 'Send Newsletter',
+            cancelText: 'Cancel',
+            variant: 'info',
+        });
+    }
+
+    if (confirmed) {
+        router.post(`/admin/posts/${post.id}/send-newsletter`);
     }
 };
 
@@ -109,24 +159,51 @@ const formatDate = (date: string | null) => {
                                 </div>
                             </td>
                             <td class="px-4 py-3">
-                                <div class="flex gap-2">
+                                <div class="flex gap-1.5 flex-wrap">
+                                    <!-- Preview Button -->
                                     <Link
                                         :href="`/admin/posts/${post.id}/preview`"
-                                        class="text-purple-600 hover:underline"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-purple-200 dark:border-purple-800 text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-colors"
+                                        title="Preview post"
                                     >
-                                        Preview
+                                        <Eye :size="14" />
+                                        <span>Preview</span>
                                     </Link>
+
+                                    <!-- Edit Button -->
                                     <Link
                                         :href="`/admin/posts/${post.id}/edit`"
-                                        class="text-blue-600 hover:underline"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                                        title="Edit post"
                                     >
-                                        Edit
+                                        <Edit :size="14" />
+                                        <span>Edit</span>
                                     </Link>
+
+                                    <!-- Send Newsletter Button -->
+                                    <button
+                                        v-if="post.is_published"
+                                        @click="sendNewsletter(post)"
+                                        :class="[
+                                            'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors',
+                                            post.newsletter_sent_at
+                                                ? 'border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-950/30 hover:bg-green-100 dark:hover:bg-green-900/50'
+                                                : 'border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300 bg-orange-50 dark:bg-orange-950/30 hover:bg-orange-100 dark:hover:bg-orange-900/50'
+                                        ]"
+                                        :title="post.newsletter_sent_at ? `Sent on ${formatDate(post.newsletter_sent_at)}` : 'Send newsletter'"
+                                    >
+                                        <component :is="post.newsletter_sent_at ? CheckCircle : Mail" :size="14" />
+                                        <span>{{ post.newsletter_sent_at ? 'Sent' : 'Newsletter' }}</span>
+                                    </button>
+
+                                    <!-- Delete Button -->
                                     <button
                                         @click="deletePost(post.id)"
-                                        class="text-red-600 hover:underline"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+                                        title="Delete post"
                                     >
-                                        Delete
+                                        <Trash2 :size="14" />
+                                        <span>Delete</span>
                                     </button>
                                 </div>
                             </td>

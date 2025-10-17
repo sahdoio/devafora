@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Image;
 
 use Illuminate\Http\UploadedFile;
@@ -8,17 +10,18 @@ use Illuminate\Support\Str;
 
 class UploadImageAction
 {
-    public function execute(UploadedFile $file, string $directory = 'images'): string
+    public function execute(UploadedFile $uploadedFile, string $directory = 'images'): string
     {
-        $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+        $filename = Str::uuid() . '.' . $uploadedFile->getClientOriginalExtension();
 
-        $path = $file->storeAs(
-            "public/{$directory}",
-            $filename
+        // Store the file using the 'public' disk
+        $path = $uploadedFile->storeAs(
+            $directory,
+            $filename,
+            'public'
         );
 
-        // Return the public path
-        return str_replace('public/', '', $path);
+        return $path;
     }
 
     public function deleteIfExists(?string $path): void

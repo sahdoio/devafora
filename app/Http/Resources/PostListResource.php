@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
@@ -27,7 +29,7 @@ class PostListResource extends JsonResource
             'excerpt' => $this->excerpt,
             'author' => $this->author,
             'image' => $imageUrl,
-            'readTime' => $this->read_time ? "{$this->read_time} min" : null,
+            'readTime' => $this->read_time ? $this->read_time . ' min' : null,
             'tags' => $this->tags ?? [],
             'publishedAt' => $this->published_at?->format('d/m/Y'),
         ];

@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Admin;
 
 use App\Actions\Post\CreatePostAction;
 use App\Actions\Post\DeletePostAction;
+use App\Actions\Post\SendPostNewsletterAction;
 use App\Actions\Post\UpdatePostAction;
+use App\Data\PostData;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
@@ -44,16 +48,16 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePostRequest $request, CreatePostAction $action)
+    public function store(StorePostRequest $storePostRequest, CreatePostAction $createPostAction)
     {
-        $data = $request->validated();
+        $data = $storePostRequest->validated();
 
         // Add image file if present
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image');
+        if ($storePostRequest->hasFile('image')) {
+            $data['image'] = $storePostRequest->file('image');
         }
 
-        $action->execute($data);
+        $createPostAction->execute(PostData::from($data));
 
         return redirect()->route('admin.posts.index')
             ->with('success', 'Post created successfully.');
@@ -85,16 +89,16 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePostRequest $request, Post $post, UpdatePostAction $action)
+    public function update(UpdatePostRequest $updatePostRequest, Post $post, UpdatePostAction $updatePostAction)
     {
-        $data = $request->validated();
+        $data = $updatePostRequest->validated();
 
         // Add image file if present
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image');
+        if ($updatePostRequest->hasFile('image')) {
+            $data['image'] = $updatePostRequest->file('image');
         }
 
-        $action->execute($post, $data);
+        $updatePostAction->execute($post, PostData::from($data));
 
         return redirect()->route('admin.posts.index')
             ->with('success', 'Post updated successfully.');
@@ -103,9 +107,9 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Post $post, DeletePostAction $action)
+    public function destroy(Post $post, DeletePostAction $deletePostAction)
     {
-        $action->execute($post);
+        $deletePostAction->execute($post);
 
         return redirect()->route('admin.posts.index')
             ->with('success', 'Post deleted successfully.');
@@ -119,5 +123,22 @@ class PostController extends Controller
         return Inertia::render('Admin/Posts/Preview', [
             'post' => (new PostResource($post->load('profile')))->resolve(),
         ]);
+    }
+
+    /**
+     * Send newsletter for the post.
+     */
+    public function sendNewsletter(Post $post, SendPostNewsletterAction $sendPostNewsletterAction)
+    {
+        // If newsletter was already sent, force resend (user already confirmed)
+        $force = $post->newsletter_sent_at !== null;
+
+        $result = $sendPostNewsletterAction->execute($post, $force);
+
+        if ($result['success']) {
+            return redirect()->back()->with('success', $result['message']);
+        }
+
+        return redirect()->back()->with('error', $result['message']);
     }
 }

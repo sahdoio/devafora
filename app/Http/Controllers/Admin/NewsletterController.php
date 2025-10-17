@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Admin;
 
 use App\Actions\Newsletter\DeleteNewsletterSubscriptionAction;
@@ -16,22 +18,22 @@ class NewsletterController extends Controller
      */
     public function index()
     {
-        $subscriptions = NewsletterSubscription::query()
+        $lengthAwarePaginator = NewsletterSubscription::query()
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
         return Inertia::render('Admin/Newsletter/Index', [
-            'subscriptions' => NewsletterSubscriptionResource::collection($subscriptions),
+            'subscriptions' => NewsletterSubscriptionResource::collection($lengthAwarePaginator),
         ]);
     }
 
     /**
      * Display the specified newsletter subscription.
      */
-    public function show(NewsletterSubscription $newsletter)
+    public function show(NewsletterSubscription $newsletterSubscription)
     {
         return Inertia::render('Admin/Newsletter/Show', [
-            'subscription' => (new NewsletterSubscriptionResource($newsletter))->resolve(),
+            'subscription' => (new NewsletterSubscriptionResource($newsletterSubscription))->resolve(),
         ]);
     }
 
@@ -39,10 +41,10 @@ class NewsletterController extends Controller
      * Toggle subscription status.
      */
     public function toggleStatus(
-        NewsletterSubscription $newsletter,
-        ToggleNewsletterStatusAction $action
+        NewsletterSubscription $newsletterSubscription,
+        ToggleNewsletterStatusAction $toggleNewsletterStatusAction
     ) {
-        $subscription = $action->execute($newsletter);
+        $subscription = $toggleNewsletterStatusAction->execute($newsletterSubscription);
 
         $message = $subscription->isSubscribed()
             ? 'Subscription reactivated successfully.'
@@ -56,10 +58,10 @@ class NewsletterController extends Controller
      * Remove the specified newsletter subscription.
      */
     public function destroy(
-        NewsletterSubscription $newsletter,
-        DeleteNewsletterSubscriptionAction $action
+        NewsletterSubscription $newsletterSubscription,
+        DeleteNewsletterSubscriptionAction $deleteNewsletterSubscriptionAction
     ) {
-        $action->execute($newsletter);
+        $deleteNewsletterSubscriptionAction->execute($newsletterSubscription);
 
         return redirect()->route('admin.newsletter.index')
             ->with('success', 'Subscription deleted successfully.');

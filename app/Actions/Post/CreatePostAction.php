@@ -1,37 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Post;
 
 use App\Actions\Image\UploadImageAction;
+use App\Data\PostData;
 use App\Models\Post;
 use Illuminate\Support\Str;
 
 class CreatePostAction
 {
     public function __construct(
-        private UploadImageAction $uploadImage
+        private readonly UploadImageAction $uploadImageAction
     ) {}
 
-    public function execute(array $data): Post
+    public function execute(PostData $data): Post
     {
+        $attributes = $data->toArray();
+
         // Handle image upload if present
-        if (isset($data['image']) && is_object($data['image'])) {
-            $data['image'] = $this->uploadImage->execute($data['image'], 'posts');
+        if ($data->image && is_object($data->image)) {
+            $attributes['image'] = $this->uploadImageAction->execute($data->image, 'posts');
         }
 
         // Generate slug from title
-        $data['slug'] = Str::slug($data['title']);
-
-        // Set default published status if not provided
-        if (!isset($data['is_published'])) {
-            $data['is_published'] = false;
-        }
+        $attributes['slug'] = Str::slug($data->title);
 
         // Set published_at timestamp if publishing
-        if ($data['is_published'] && !isset($data['published_at'])) {
-            $data['published_at'] = now();
+        if ($data->is_published && !isset($attributes['published_at'])) {
+            $attributes['published_at'] = now();
         }
 
-        return Post::create($data);
+        return Post::create($attributes);
     }
 }

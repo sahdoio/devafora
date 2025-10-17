@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Newsletter;
 
 use App\Models\NewsletterSubscription;
@@ -8,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 class SubscribeToNewsletterAction
 {
     public function __construct(
-        private SendWelcomeEmailAction $sendWelcomeEmail
+        private readonly SendWelcomeEmailAction $sendWelcomeEmailAction
     ) {}
 
     public function execute(string $email, ?string $name = null): NewsletterSubscription
@@ -26,7 +28,7 @@ class SubscribeToNewsletterAction
             $subscription->subscribe();
 
             if ($isNewSubscription) {
-                $this->sendWelcomeEmail->execute($subscription);
+                $this->sendWelcomeEmailAction->execute($subscription);
             }
 
             return $subscription;

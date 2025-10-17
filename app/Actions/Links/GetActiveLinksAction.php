@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Links;
 
 use App\Models\Link;
@@ -13,7 +15,7 @@ class GetActiveLinksAction
             ->active()
             ->ordered();
 
-        if ($profileId) {
+        if ($profileId !== null && $profileId !== 0) {
             $query->where('profile_id', $profileId);
         }
 

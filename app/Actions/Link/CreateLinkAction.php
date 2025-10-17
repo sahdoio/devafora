@@ -1,23 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Link;
 
+use App\Data\LinkData;
 use App\Models\Link;
 
 class CreateLinkAction
 {
-    public function execute(array $data): Link
+    public function execute(LinkData $data): Link
     {
         // Set default order if not provided
-        if (!isset($data['order'])) {
-            $data['order'] = Link::max('order') + 1;
+        if ($data->order === null) {
+            $data->order = Link::max('order') + 1;
         }
 
-        // Set default active status if not provided
-        if (!isset($data['is_active'])) {
-            $data['is_active'] = true;
-        }
-
-        return Link::create($data);
+        return Link::create($data->toArray());
     }
 }

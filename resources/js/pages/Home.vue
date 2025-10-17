@@ -2,6 +2,7 @@
 import { Head } from '@inertiajs/vue3'
 import LinkCard from '@/components/LinkCard.vue'
 import NewsletterForm from '@/components/NewsletterForm.vue'
+import PostCard from '@/components/PostCard.vue'
 
 interface Profile {
   id: number
@@ -24,9 +25,9 @@ interface Post {
   slug: string
   excerpt: string
   image?: string
-  readTime: string
+  read_time: number
   tags: string[]
-  publishedAt: string
+  published_at: string
 }
 
 const props = defineProps<{
@@ -108,8 +109,8 @@ if (props.profile) {
       </div>
     </section>
 
-    <!-- POSTS - Temporarily hidden for launch -->
-    <!-- <section class="px-4 py-12">
+    <!-- POSTS -->
+    <section class="px-4 py-12">
       <div class="mx-auto max-w-5xl">
         <h2 class="mb-8 text-center text-3xl font-bold text-white md:text-4xl">
           Últimos Posts
@@ -118,8 +119,21 @@ if (props.profile) {
         <div v-if="posts && posts.length > 0" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <PostCard v-for="post in posts" :key="post.id" :post="post" />
         </div>
+
+        <!-- View More Button -->
+        <div class="mt-8 text-center">
+          <a
+            href="/posts"
+            class="inline-flex items-center gap-2 rounded-xl border border-blue-500/30 bg-blue-600/10 px-8 py-3 text-base font-semibold text-blue-400 transition-all hover:border-blue-500/50 hover:bg-blue-600/20"
+          >
+            Ver Todos os Posts
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+          </a>
+        </div>
       </div>
-    </section> -->
+    </section>
 
     <!-- FOOTER - Minimalista -->
     <footer class="border-t border-white/5 px-4 py-8">

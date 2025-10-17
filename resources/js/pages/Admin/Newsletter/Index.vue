@@ -2,6 +2,8 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { Eye, ToggleLeft, ToggleRight, Trash2 } from 'lucide-vue-next';
+import { useConfirm } from '@/composables/useConfirm';
 import { computed } from 'vue';
 
 interface NewsletterSubscription {
@@ -38,6 +40,8 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Newsletter', href: '/admin/newsletter' },
 ];
 
+const { confirm } = useConfirm();
+
 const activeCount = computed(() => {
     return props.subscriptions.data.filter(sub => sub.is_active).length;
 });
@@ -46,14 +50,32 @@ const inactiveCount = computed(() => {
     return props.subscriptions.data.filter(sub => !sub.is_active).length;
 });
 
-const deleteSubscription = (id: number) => {
-    if (confirm('Are you sure you want to delete this subscription?')) {
+const deleteSubscription = async (id: number) => {
+    const confirmed = await confirm({
+        title: 'Delete Subscription',
+        message: 'Are you sure you want to delete this subscription? This action cannot be undone.',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        variant: 'danger',
+    });
+
+    if (confirmed) {
         router.delete(`/admin/newsletter/${id}`);
     }
 };
 
-const toggleStatus = (id: number) => {
-    if (confirm('Are you sure you want to change the status of this subscription?')) {
+const toggleStatus = async (id: number, isActive: boolean) => {
+    const confirmed = await confirm({
+        title: isActive ? 'Deactivate Subscription' : 'Activate Subscription',
+        message: isActive
+            ? 'This subscriber will stop receiving newsletter emails.'
+            : 'This subscriber will start receiving newsletter emails again.',
+        confirmText: isActive ? 'Deactivate' : 'Activate',
+        cancelText: 'Cancel',
+        variant: isActive ? 'warning' : 'success',
+    });
+
+    if (confirmed) {
         router.post(`/admin/newsletter/${id}/toggle`);
     }
 };
@@ -123,24 +145,40 @@ const formatDate = (dateString: string) => {
                                 {{ formatDate(subscription.subscribed_at) }}
                             </td>
                             <td class="px-4 py-3">
-                                <div class="flex gap-2" @click.stop>
+                                <div class="flex gap-1.5 flex-wrap" @click.stop>
+                                    <!-- View Button -->
                                     <Link
                                         :href="`/admin/newsletter/${subscription.id}`"
-                                        class="text-blue-600 hover:underline"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                                        title="View subscription details"
                                     >
-                                        View
+                                        <Eye :size="14" />
+                                        <span>View</span>
                                     </Link>
+
+                                    <!-- Toggle Status Button -->
                                     <button
-                                        @click="toggleStatus(subscription.id)"
-                                        class="text-yellow-600 hover:underline"
+                                        @click="toggleStatus(subscription.id, subscription.is_active)"
+                                        :class="[
+                                            'inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors',
+                                            subscription.is_active
+                                                ? 'border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300 bg-orange-50 dark:bg-orange-950/30 hover:bg-orange-100 dark:hover:bg-orange-900/50'
+                                                : 'border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-950/30 hover:bg-green-100 dark:hover:bg-green-900/50'
+                                        ]"
+                                        :title="subscription.is_active ? 'Deactivate subscription' : 'Activate subscription'"
                                     >
-                                        {{ subscription.is_active ? 'Deactivate' : 'Activate' }}
+                                        <component :is="subscription.is_active ? ToggleLeft : ToggleRight" :size="14" />
+                                        <span>{{ subscription.is_active ? 'Deactivate' : 'Activate' }}</span>
                                     </button>
+
+                                    <!-- Delete Button -->
                                     <button
                                         @click="deleteSubscription(subscription.id)"
-                                        class="text-red-600 hover:underline"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+                                        title="Delete subscription"
                                     >
-                                        Delete
+                                        <Trash2 :size="14" />
+                                        <span>Delete</span>
                                     </button>
                                 </div>
                             </td>

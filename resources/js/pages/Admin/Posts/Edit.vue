@@ -77,6 +77,8 @@ const contentTextarea = ref<HTMLTextAreaElement>();
 const selectedColor = ref('#3b82f6');
 const processing = ref(false);
 const errors = ref<Record<string, string>>({});
+const newImagePreview = ref<string | null>(null);
+const fileInput = ref<HTMLInputElement | null>(null);
 
 const htmlPreview = computed(() => {
     try {
@@ -344,13 +346,67 @@ const submit = () => {
                     </div>
 
                     <div>
-                        <label for="image" class="block text-sm font-medium mb-2">Image URL</label>
-                        <input
-                            id="image"
-                            v-model="form.image"
-                            type="url"
-                            class="w-full rounded-md border border-sidebar-border/70 bg-background px-3 py-2 dark:border-sidebar-border"
-                        />
+                        <label class="block text-sm font-medium mb-2">Header Image</label>
+
+                        <!-- Current Image Preview -->
+                        <div v-if="post.image && typeof form.image === 'string' && !newImagePreview" class="mb-3 rounded-lg overflow-hidden border border-sidebar-border/70">
+                            <img
+                                :src="post.image.startsWith('http') ? post.image : `/storage/${post.image}`"
+                                alt="Current header"
+                                class="w-full max-h-48 object-cover"
+                            />
+                            <p class="text-xs text-gray-500 p-2 bg-sidebar-accent/20">Current header image</p>
+                        </div>
+
+                        <!-- New Image Preview -->
+                        <div v-if="newImagePreview" class="mb-3 rounded-lg overflow-hidden border-2 border-blue-500">
+                            <img :src="newImagePreview" alt="New header preview" class="w-full max-h-48 object-cover" />
+                            <div class="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950/30">
+                                <p class="text-xs text-blue-700 dark:text-blue-300 font-medium">New header image (not saved yet)</p>
+                                <button
+                                    type="button"
+                                    @click="() => {
+                                        form.image = post.image;
+                                        newImagePreview = null;
+                                        if (fileInput) {
+                                            fileInput.value = '';
+                                        }
+                                    }"
+                                    class="text-xs text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- File Upload -->
+                        <div>
+                            <input
+                                ref="fileInput"
+                                id="image-file"
+                                type="file"
+                                accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
+                                @change="(e) => {
+                                    const target = e.target as HTMLInputElement;
+                                    if (target.files && target.files[0]) {
+                                        const file = target.files[0];
+                                        form.image = file;
+
+                                        // Create preview
+                                        const reader = new FileReader();
+                                        reader.onload = (e) => {
+                                            newImagePreview = e.target?.result as string;
+                                        };
+                                        reader.readAsDataURL(file);
+                                    }
+                                }"
+                                class="w-full rounded-md border border-sidebar-border/70 bg-background px-3 py-2 dark:border-sidebar-border file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-200"
+                            />
+                            <p class="mt-1 text-xs text-gray-500">
+                                Accepts: JPEG, PNG, JPG, GIF, WebP (max 2MB)
+                            </p>
+                        </div>
+
                         <InputError :message="form.errors.image" />
                     </div>
 
@@ -453,8 +509,12 @@ const submit = () => {
                         </div>
 
                         <!-- Banner Image -->
-                        <div v-if="form.image" class="rounded-xl overflow-hidden">
-                            <img :src="`/storage/${form.image}`" alt="Banner" class="w-full" />
+                        <div v-if="newImagePreview || form.image" class="rounded-xl overflow-hidden">
+                            <img
+                                :src="newImagePreview || (typeof form.image === 'string' ? (form.image.startsWith('http') ? form.image : `/storage/${form.image}`) : '')"
+                                alt="Banner"
+                                class="w-full"
+                            />
                         </div>
 
                         <!-- Excerpt -->

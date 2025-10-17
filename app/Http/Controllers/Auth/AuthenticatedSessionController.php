@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -28,22 +30,22 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $loginRequest): RedirectResponse
     {
-        $user = $request->validateCredentials();
+        $user = $loginRequest->validateCredentials();
 
         if (Features::enabled(Features::twoFactorAuthentication()) && $user->hasEnabledTwoFactorAuthentication()) {
-            $request->session()->put([
+            $loginRequest->session()->put([
                 'login.id' => $user->getKey(),
-                'login.remember' => $request->boolean('remember'),
+                'login.remember' => $loginRequest->boolean('remember'),
             ]);
 
             return to_route('two-factor.login');
         }
 
-        Auth::login($user, $request->boolean('remember'));
+        Auth::login($user, $loginRequest->boolean('remember'));
 
-        $request->session()->regenerate();
+        $loginRequest->session()->regenerate();
 
         return redirect()->intended(route('dashboard', absolute: false));
     }

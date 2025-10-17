@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Admin;
 
 use App\Actions\Dashboard\GetDashboardStatsAction;
@@ -11,9 +13,9 @@ class DashboardController extends Controller
     /**
      * Display the admin dashboard.
      */
-    public function index(GetDashboardStatsAction $action)
+    public function index(GetDashboardStatsAction $getDashboardStatsAction)
     {
-        $stats = $action->execute();
+        $stats = $getDashboardStatsAction->execute();
 
         return Inertia::render('Dashboard', [
             'stats' => $stats,

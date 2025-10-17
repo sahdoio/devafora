@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions\Dashboard;
 
 use App\Models\Link;
@@ -27,7 +29,7 @@ class GetDashboardStatsAction
             ->groupBy('date')
             ->orderBy('date')
             ->get()
-            ->map(fn($item) => [
+            ->map(fn($item): array => [
                 'date' => $item->date,
                 'count' => $item->count,
             ]);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Mail;
 
 use App\Models\NewsletterSubscription;
@@ -11,8 +13,8 @@ use Illuminate\Queue\SerializesModels;
 
 class NewsletterWelcomeMail extends Mailable
 {
-    use Queueable, SerializesModels;
-
+    use Queueable;
+    use SerializesModels;
     public function __construct(
         public NewsletterSubscription $subscription
     ) {}

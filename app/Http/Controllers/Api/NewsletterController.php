@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
 use App\Actions\Newsletter\SubscribeToNewsletterAction;
@@ -10,18 +12,18 @@ use Illuminate\Http\JsonResponse;
 class NewsletterController extends Controller
 {
     public function subscribe(
-        NewsletterSubscribeRequest $request,
-        SubscribeToNewsletterAction $subscribe
+        NewsletterSubscribeRequest $newsletterSubscribeRequest,
+        SubscribeToNewsletterAction $subscribeToNewsletterAction
     ): JsonResponse {
-        $subscription = $subscribe->execute(
-            email: $request->validated('email'),
-            name: $request->validated('name')
+        $newsletterSubscription = $subscribeToNewsletterAction->execute(
+            email: $newsletterSubscribeRequest->validated('email'),
+            name: $newsletterSubscribeRequest->validated('name')
         );
 
         return response()->json([
             'message' => 'Inscrição realizada com sucesso! Verifique seu e-mail.',
             'data' => [
-                'email' => $subscription->email,
+                'email' => $newsletterSubscription->email,
                 'subscribed' => true,
             ]
         ], 201);

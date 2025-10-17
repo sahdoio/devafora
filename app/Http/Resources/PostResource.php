@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
@@ -33,12 +35,11 @@ class PostResource extends JsonResource
             'tags' => $this->tags ?? [],
             'published_at' => $this->published_at?->toISOString(),
             'is_published' => $this->is_published,
-            'profile' => $this->whenLoaded('profile', function () {
-                return [
-                    'id' => $this->profile->id,
-                    'name' => $this->profile->name,
-                ];
-            }),
+            'newsletter_sent_at' => $this->newsletter_sent_at?->toISOString(),
+            'profile' => $this->whenLoaded('profile', fn(): array => [
+                'id' => $this->profile->id,
+                'name' => $this->profile->name,
+            ]),
             'created_at' => $this->created_at?->toISOString(),
         ];
     }

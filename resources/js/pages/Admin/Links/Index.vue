@@ -2,6 +2,8 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
+import { Edit, Trash2 } from 'lucide-vue-next';
+import { useConfirm } from '@/composables/useConfirm';
 
 interface LinkItem {
     id: number;
@@ -26,8 +28,18 @@ const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Links', href: '/admin/links' },
 ];
 
-const deleteLink = (id: number) => {
-    if (confirm('Are you sure you want to delete this link?')) {
+const { confirm } = useConfirm();
+
+const deleteLink = async (id: number) => {
+    const confirmed = await confirm({
+        title: 'Delete Link',
+        message: 'Are you sure you want to delete this link? This action cannot be undone.',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        variant: 'danger',
+    });
+
+    if (confirmed) {
         router.delete(`/admin/links/${id}`);
     }
 };
@@ -97,18 +109,25 @@ const deleteLink = (id: number) => {
                                 </span>
                             </td>
                             <td class="px-4 py-3">
-                                <div class="flex gap-2">
+                                <div class="flex gap-1.5 flex-wrap">
+                                    <!-- Edit Button -->
                                     <Link
                                         :href="`/admin/links/${link.id}/edit`"
-                                        class="text-blue-600 hover:underline"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                                        title="Edit link"
                                     >
-                                        Edit
+                                        <Edit :size="14" />
+                                        <span>Edit</span>
                                     </Link>
+
+                                    <!-- Delete Button -->
                                     <button
                                         @click="deleteLink(link.id)"
-                                        class="text-red-600 hover:underline"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
+                                        title="Delete link"
                                     >
-                                        Delete
+                                        <Trash2 :size="14" />
+                                        <span>Delete</span>
                                     </button>
                                 </div>
                             </td>

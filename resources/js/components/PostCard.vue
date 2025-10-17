@@ -8,9 +8,9 @@ interface Post {
   slug: string
   excerpt: string
   image?: string
-  readTime: string
+  read_time: number
   tags: string[]
-  publishedAt: string
+  published_at: string
 }
 
 defineProps<{
@@ -55,11 +55,13 @@ defineProps<{
 
       <!-- Meta -->
       <div class="flex items-center gap-4 text-sm text-gray-500">
-        <div class="flex items-center gap-1">
+        <div v-if="post.read_time" class="flex items-center gap-1">
           <ClockIcon class="h-4 w-4" />
-          <span>{{ post.readTime }}</span>
+          <span>{{ post.read_time }} min read</span>
         </div>
-        <span>{{ post.publishedAt }}</span>
+        <span v-if="post.published_at">
+          {{ new Date(post.published_at).toLocaleDateString('pt-BR', { year: 'numeric', month: 'short', day: 'numeric' }) }}
+        </span>
       </div>
     </div>
   </Link>

@@ -13,9 +13,9 @@ interface Post {
   content: string
   author?: string
   image?: string
-  readTime: string
+  read_time: number
   tags: string[]
-  publishedAt: string
+  published_at: string
 }
 
 defineProps<{
@@ -66,11 +66,13 @@ onMounted(() => {
           <div v-if="post.author" class="flex items-center gap-2">
             <span class="font-medium text-white">{{ post.author }}</span>
           </div>
-          <div class="flex items-center gap-1">
+          <div v-if="post.read_time" class="flex items-center gap-1">
             <ClockIcon class="h-4 w-4" />
-            <span>{{ post.readTime }}</span>
+            <span>{{ post.read_time }} min read</span>
           </div>
-          <div>{{ post.publishedAt }}</div>
+          <div v-if="post.published_at">
+            {{ new Date(post.published_at).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' }) }}
+          </div>
         </div>
 
         <!-- Tags -->
