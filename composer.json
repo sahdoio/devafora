@@ -18,7 +18,8 @@
         "league/commonmark": "^2.8",
         "spatie/laravel-data": "^4.18",
         "symfony/http-client": "^7.3",
-        "symfony/postmark-mailer": "^7.3"
+        "symfony/postmark-mailer": "^7.3",
+        "symfony/yaml": "^7.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
