@@ -29,11 +29,6 @@ class Profile extends Model
         return $this->hasMany(Link::class);
     }
 
-    public function posts(): HasMany
-    {
-        return $this->hasMany(Post::class);
-    }
-
     // Scopes
     public function scopeActive($query)
     {

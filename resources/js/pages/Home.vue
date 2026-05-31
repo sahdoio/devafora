@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3'
-import LinkCard from '@/components/LinkCard.vue'
+import { ref, computed } from 'vue'
+import { Head, Link } from '@inertiajs/vue3'
 import NewsletterForm from '@/components/NewsletterForm.vue'
 import PostCard from '@/components/PostCard.vue'
+import SiteNavbar from '@/components/SiteNavbar.vue'
+import { useI18n } from '@/composables/useI18n'
+
+const { t, locale } = useI18n()
 
 interface Profile {
   id: number
@@ -11,16 +15,8 @@ interface Profile {
   photo?: string | null
 }
 
-interface Link {
-  id: number
-  title: string
-  description: string
-  url: string
-  icon: string
-}
-
 interface Post {
-  id: number
+  id: string
   title: string
   slug: string
   excerpt: string
@@ -30,116 +26,189 @@ interface Post {
   published_at: string
 }
 
+interface Video {
+  videoId: string
+  title: string
+  url: string
+  thumbnail: string
+  published_at: string
+}
+
 const props = defineProps<{
   profile: Profile | null
-  links: Link[]
   posts: Post[]
+  videos: Video[]
 }>()
 
-// Debug temporário
-if (props.profile) {
-  console.log('Profile received:', props.profile)
-  console.log('Bio value:', props.profile.bio)
-  console.log('Bio type:', typeof props.profile.bio)
+const socials = [
+  { label: 'YouTube', url: 'https://www.youtube.com/@devafora' },
+  { label: 'Instagram', url: 'https://www.instagram.com/lucassahdo' },
+  { label: 'TikTok', url: 'https://www.tiktok.com/@lucassahdo' },
+  { label: 'GitHub', url: 'https://github.com/sahdoio' },
+  { label: 'LinkedIn', url: 'https://www.linkedin.com/in/lucassahdo/' },
+  { label: 'X', url: 'https://x.com/sahdoio' },
+]
+
+const visibleVideos = ref(6)
+const shownVideos = computed(() => props.videos.slice(0, visibleVideos.value))
+const hasMoreVideos = computed(() => visibleVideos.value < props.videos.length)
+
+function loadMoreVideos() {
+  visibleVideos.value += 6
+}
+
+function formatDate(date: string) {
+  const tag = locale.value === 'en' ? 'en-US' : 'pt-BR'
+  return new Date(date).toLocaleDateString(tag, { year: 'numeric', month: 'short', day: 'numeric' })
 }
 </script>
 
 <template>
-  <Head title="DevAfora - Links e Conteúdo" />
+  <Head title="DevAfora — Lucas Sahdo, Engenheiro de Software" />
 
-  <!-- Container principal com gradiente único e contínuo -->
-  <div class="min-h-screen bg-gradient-to-b from-[#0a1628] via-[#0f2847] to-[#1e3a8a]">
+  <div class="min-h-screen bg-surface-primary font-sans text-text-primary">
+    <SiteNavbar />
 
-    <!-- HEADER/PROFILE - Seção única sem separação visual -->
-    <section class="px-4 py-6">
-      <div class="mx-auto max-w-4xl">
-        <div class="flex flex-col items-center text-center">
+    <div class="mx-auto flex max-w-[1100px] flex-col items-center px-6 pb-12 pt-28">
 
-          <!-- Profile Photo -->
-          <div class="mb-6">
-            <div class="h-40 w-40 rounded-full bg-gradient-to-br from-blue-300 to-blue-400 p-1 shadow-2xl shadow-blue-400/30">
-              <img
-                :src="profile?.photo || '/images/profile.jpeg'"
-                :alt="profile?.name || 'DevAfora'"
-                class="h-full w-full rounded-full object-cover"
-              />
-            </div>
-          </div>
+      <!-- HERO / SOBRE -->
+      <section class="flex flex-col items-center text-center">
+        <img
+          src="/images/profile.jpeg"
+          alt="Lucas Sahdo"
+          class="mb-5 h-28 w-28 rounded-full border-2 border-brand/40 object-cover shadow-lg shadow-brand/10 sm:h-32 sm:w-32"
+        />
 
-          <!-- Logo -->
-          <div class="mb-4">
-            <img
-              src="/images/logo.png"
-              :alt="profile?.name || 'DevAfora'"
-              class="h-20 w-auto md:h-24"
-            />
-          </div>
+        <h1 class="font-heading text-3xl font-semibold tracking-tight md:text-4xl">
+          Lucas Sahdo
+        </h1>
+        <p class="mt-2 text-base font-medium text-brand md:text-lg">
+          {{ t('heroTitle') }}
+        </p>
+        <p class="mt-1 text-sm text-text-muted">
+          {{ t('heroSubtitle') }}
+        </p>
 
-          <!-- Bio COMPLETA -->
-          <p class="mx-auto max-w-3xl text-lg leading-relaxed text-gray-300">
-            {{ profile?.bio ?? '' }}
-          </p>
-        </div>
-      </div>
-    </section>
+        <p
+          class="mt-5 max-w-2xl text-[15px] leading-relaxed text-text-secondary"
+          v-html="t('heroBio')"
+        ></p>
 
-    <!-- LINKS - Cards LARGOS sem separação visual -->
-    <section class="px-4 py-3">
-      <div class="mx-auto max-w-2xl">
-        <div class="space-y-3">
-          <LinkCard v-for="link in links" :key="link.id" :link="link" />
-        </div>
-      </div>
-    </section>
-
-    <!-- NEWSLETTER - Sem mudança brusca de background -->
-    <section class="px-4 py-12">
-      <div class="mx-auto max-w-2xl">
-        <div class="rounded-2xl border border-blue-500/10 bg-white/5 p-8 backdrop-blur-sm">
-          <div class="text-center">
-            <h2 class="mb-3 text-3xl font-bold text-white">
-              Inscreva-se na Newsletter
-            </h2>
-            <p class="mb-8 text-gray-400">
-              Receba conteúdos exclusivos, dicas e novidades diretamente no seu e-mail
-            </p>
-            <NewsletterForm />
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- POSTS -->
-    <section class="px-4 py-12">
-      <div class="mx-auto max-w-5xl">
-        <h2 class="mb-8 text-center text-3xl font-bold text-white md:text-4xl">
-          Últimos Posts
-        </h2>
-
-        <div v-if="posts && posts.length > 0" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <PostCard v-for="post in posts" :key="post.id" :post="post" />
+        <div class="mt-5 rounded-full bg-green-900/20 px-4 py-1 text-sm text-green-400">
+          {{ t('heroAvailable') }}
         </div>
 
-        <!-- View More Button -->
-        <div class="mt-8 text-center">
+        <div class="mt-6 flex flex-wrap justify-center gap-x-5 gap-y-2 text-[15px] text-text-secondary">
           <a
-            href="/posts"
-            class="inline-flex items-center gap-2 rounded-xl border border-blue-500/30 bg-blue-600/10 px-8 py-3 text-base font-semibold text-blue-400 transition-all hover:border-blue-500/50 hover:bg-blue-600/20"
+            v-for="social in socials"
+            :key="social.label"
+            :href="social.url"
+            target="_blank"
+            rel="noopener"
+            class="transition-colors duration-150 hover:text-text-primary"
           >
-            Ver Todos os Posts
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
-            </svg>
+            {{ social.label }}
           </a>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- FOOTER - Minimalista -->
-    <footer class="border-t border-white/5 px-4 py-8">
-      <div class="mx-auto max-w-6xl text-center text-sm text-gray-500">
-        <p>© {{ new Date().getFullYear() }} DevAfora. Todos os direitos reservados.</p>
-      </div>
-    </footer>
+      <!-- POSTS -->
+      <section class="mt-16 w-full">
+        <div class="mb-6 flex items-end justify-between">
+          <h2 class="font-heading text-2xl font-semibold tracking-tight">{{ t('latestPosts') }}</h2>
+          <Link href="/posts" class="text-sm text-text-muted transition-colors hover:text-brand">
+            {{ t('seeAll') }} &rarr;
+          </Link>
+        </div>
+
+        <div v-if="posts.length > 0" class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <PostCard v-for="post in posts" :key="post.slug" :post="post" />
+        </div>
+        <div v-else class="rounded-xl border border-border-subtle bg-surface-secondary p-10 text-center text-text-muted">
+          {{ t('noPosts') }}
+        </div>
+      </section>
+
+      <!-- VÍDEOS DO YOUTUBE -->
+      <section class="mt-16 w-full">
+        <div class="mb-6 flex items-end justify-between">
+          <h2 class="font-heading text-2xl font-semibold tracking-tight">{{ t('videosTitle') }}</h2>
+          <a
+            href="https://www.youtube.com/@devafora"
+            target="_blank"
+            rel="noopener"
+            class="text-sm text-text-muted transition-colors hover:text-brand"
+          >
+            @devafora &rarr;
+          </a>
+        </div>
+
+        <div v-if="videos.length > 0">
+          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <a
+              v-for="video in shownVideos"
+              :key="video.videoId"
+              :href="video.url"
+              target="_blank"
+              rel="noopener"
+              class="group flex flex-col overflow-hidden rounded-xl border border-border-subtle bg-surface-secondary transition-all duration-150 hover:border-brand/40 hover:bg-surface-tertiary"
+            >
+              <div class="relative aspect-video overflow-hidden">
+                <img
+                  :src="video.thumbnail"
+                  :alt="video.title"
+                  loading="lazy"
+                  class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+                <div class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100">
+                  <span class="flex h-12 w-12 items-center justify-center rounded-full bg-brand text-surface-primary">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+                  </span>
+                </div>
+              </div>
+              <div class="flex flex-1 flex-col p-4">
+                <h3 class="mb-2 line-clamp-2 font-heading text-[16px] font-semibold leading-snug tracking-tight text-text-primary">
+                  {{ video.title }}
+                </h3>
+                <span class="mt-auto text-[13px] text-text-muted">{{ formatDate(video.published_at) }}</span>
+              </div>
+            </a>
+          </div>
+
+          <div v-if="hasMoreVideos" class="mt-6 flex justify-center">
+            <button
+              @click="loadMoreVideos"
+              class="rounded-lg bg-brand/10 px-6 py-2 text-sm font-medium text-brand transition-all duration-150 hover:bg-brand/20"
+            >
+              {{ t('loadMore') }}
+            </button>
+          </div>
+        </div>
+        <div v-else class="rounded-xl border border-border-subtle bg-surface-secondary p-10 text-center text-text-muted">
+          {{ t('videosUnavailable') }}
+          <a href="https://www.youtube.com/@devafora" target="_blank" rel="noopener" class="text-brand hover:underline">
+            {{ t('seeOnChannel') }} &rarr;
+          </a>
+        </div>
+      </section>
+
+      <!-- NEWSLETTER -->
+      <section class="mt-16 w-full max-w-2xl">
+        <div class="rounded-2xl border border-border-subtle bg-surface-secondary p-8 text-center">
+          <h2 class="mb-3 font-heading text-2xl font-semibold tracking-tight">
+            {{ t('newsletterTitle') }}
+          </h2>
+          <p class="mb-7 text-text-secondary">
+            {{ t('newsletterText') }}
+          </p>
+          <NewsletterForm />
+        </div>
+      </section>
+
+      <!-- FOOTER -->
+      <footer class="mt-16 w-full border-t border-border-subtle pt-8 text-center text-sm text-text-muted">
+        © {{ new Date().getFullYear() }} DevAfora — Lucas Sahdo. {{ t('rights') }}
+      </footer>
+    </div>
   </div>
 </template>

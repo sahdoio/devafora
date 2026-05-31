@@ -31,7 +31,6 @@ class ProfileResource extends JsonResource
             'photo' => $photoUrl,
             'isActive' => $this->is_active,
             'linksCount' => $this->whenCounted('links'),
-            'postsCount' => $this->whenCounted('posts'),
             'createdAt' => $this->created_at?->toISOString(),
         ];
     }

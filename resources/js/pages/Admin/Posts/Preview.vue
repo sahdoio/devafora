@@ -63,7 +63,7 @@ const formatDate = (date: string | null) => {
                     </Link>
                     <div class="flex gap-2">
                         <Link
-                            :href="`/admin/posts/${post.id}/edit`"
+                            :href="`/admin/posts/${post.slug}/edit`"
                             class="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
                         >
                             Edit Post
@@ -96,7 +96,7 @@ const formatDate = (date: string | null) => {
                 </div>
 
                 <!-- Title -->
-                <h1 class="mb-6 text-4xl font-bold text-white md:text-5xl">
+                <h1 class="mb-6 font-heading text-4xl font-semibold leading-tight tracking-tight text-white md:text-5xl">
                     {{ post.title }}
                 </h1>
 
@@ -130,7 +130,7 @@ const formatDate = (date: string | null) => {
 
                 <!-- Content -->
                 <div
-                    class="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-p:text-gray-300 prose-a:text-blue-400 prose-strong:text-white prose-code:rounded prose-code:bg-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-blue-400 prose-pre:overflow-x-auto prose-pre:rounded-xl prose-pre:bg-slate-900 prose-pre:p-0 prose-img:rounded-xl"
+                    class="prose prose-invert prose-lg max-w-none prose-headings:font-heading prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-white prose-h2:mt-14 prose-h2:mb-5 prose-h2:text-3xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:text-2xl prose-p:my-6 prose-p:leading-8 prose-p:text-gray-300 prose-a:text-blue-400 prose-strong:text-white prose-code:rounded prose-code:bg-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-blue-400 prose-pre:overflow-x-auto prose-pre:rounded-xl prose-pre:bg-slate-900 prose-pre:p-0 prose-img:my-8 prose-img:mx-auto prose-img:rounded-xl prose-li:my-1.5 prose-ul:my-6 prose-ol:my-6 prose-hr:my-12 prose-hr:border-slate-800 prose-table:my-8"
                     v-html="post.content"
                 ></div>
 
@@ -144,7 +144,7 @@ const formatDate = (date: string | null) => {
                         <span>Back to Posts</span>
                     </Link>
                     <Link
-                        :href="`/admin/posts/${post.id}/edit`"
+                        :href="`/admin/posts/${post.slug}/edit`"
                         class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 font-semibold text-white transition-all hover:from-blue-700 hover:to-purple-700"
                     >
                         <span>Edit Post</span>

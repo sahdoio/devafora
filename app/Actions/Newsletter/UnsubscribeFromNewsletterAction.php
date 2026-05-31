@@ -12,7 +12,7 @@ class UnsubscribeFromNewsletterAction
     {
         $subscription = NewsletterSubscription::where('email', $email)->first();
 
-        if (!$subscription) {
+        if (! $subscription) {
             return null;
         }
 

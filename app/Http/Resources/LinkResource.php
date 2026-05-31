@@ -20,7 +20,7 @@ class LinkResource extends JsonResource
             'icon' => $this->icon,
             'order' => $this->order,
             'is_active' => $this->is_active,
-            'profile' => $this->whenLoaded('profile', fn(): array => [
+            'profile' => $this->whenLoaded('profile', fn (): array => [
                 'id' => $this->profile->id,
                 'name' => $this->profile->name,
             ]),

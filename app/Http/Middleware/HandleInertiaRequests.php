@@ -43,6 +43,14 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'name' => config('app.name'),
+            'locale' => app()->getLocale(),
+            'locales' => \App\Support\Locale::SUPPORTED,
+            'giscus' => [
+                'repo' => config('services.giscus.repo'),
+                'repoId' => config('services.giscus.repo_id'),
+                'category' => config('services.giscus.category'),
+                'categoryId' => config('services.giscus.category_id'),
+            ],
             'quote' => ['message' => trim((string) $message), 'author' => trim((string) $author)],
             'auth' => [
                 'user' => $request->user(),

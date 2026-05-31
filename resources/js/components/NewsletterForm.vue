@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { PaperAirplaneIcon } from '@heroicons/vue/24/outline'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 const email = ref('')
 const name = ref('')
@@ -10,7 +13,7 @@ const error = ref('')
 
 const subscribe = async () => {
   if (!email.value) {
-    error.value = 'Por favor, insira seu e-mail.'
+    error.value = t('nlNeedEmail')
     return
   }
 
@@ -44,7 +47,7 @@ const subscribe = async () => {
       error.value = data.message || 'Ocorreu um erro. Tente novamente.'
     }
   } catch {
-    error.value = 'Erro ao conectar com o servidor. Tente novamente.'
+    error.value = t('nlServerError')
   } finally {
     loading.value = false
   }
@@ -59,7 +62,7 @@ const subscribe = async () => {
         v-if="success"
         class="rounded-xl bg-green-500/10 border border-green-500/30 p-4 text-center text-green-400"
       >
-        ✓ Inscrição realizada com sucesso! Verifique seu e-mail.
+        {{ t('nlSuccess') }}
       </div>
 
       <!-- Error Message -->
@@ -75,7 +78,7 @@ const subscribe = async () => {
         <input
           v-model="email"
           type="email"
-          placeholder="Seu melhor e-mail"
+          :placeholder="t('nlPlaceholder')"
           required
           class="flex-1 rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-white placeholder-gray-500 backdrop-blur-sm transition-all focus:border-blue-500/50 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
         />
@@ -84,7 +87,7 @@ const subscribe = async () => {
           :disabled="loading"
           class="group flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-3 font-semibold text-white transition-all hover:from-blue-700 hover:to-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <span>{{ loading ? 'Enviando...' : 'Inscrever' }}</span>
+          <span>{{ loading ? t('nlSending') : t('nlSubscribe') }}</span>
           <PaperAirplaneIcon
             class="h-5 w-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
           />
@@ -92,7 +95,7 @@ const subscribe = async () => {
       </div>
 
       <p class="text-center text-xs text-gray-500">
-        Ao se inscrever, você concorda em receber e-mails com novidades e conteúdos.
+        {{ t('nlConsent') }}
       </p>
     </form>
   </div>

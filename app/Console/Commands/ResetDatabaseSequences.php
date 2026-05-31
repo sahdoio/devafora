@@ -24,16 +24,18 @@ class ResetDatabaseSequences extends Command
             $this->resetSqliteSequences();
         } else {
             $this->error("Unsupported database driver: {$driver}");
+
             return self::FAILURE;
         }
 
         $this->info('✅ Database sequences reset successfully!');
+
         return self::SUCCESS;
     }
 
     private function resetPostgresSequences(): void
     {
-        $tables = ['links', 'posts', 'newsletter_subscriptions', 'profiles'];
+        $tables = ['links', 'newsletter_subscriptions', 'profiles'];
 
         foreach ($tables as $table) {
             try {
@@ -48,7 +50,7 @@ class ResetDatabaseSequences extends Command
 
     private function resetSqliteSequences(): void
     {
-        $tables = ['links', 'posts', 'newsletter_subscriptions', 'profiles'];
+        $tables = ['links', 'newsletter_subscriptions', 'profiles'];
 
         foreach ($tables as $table) {
             try {

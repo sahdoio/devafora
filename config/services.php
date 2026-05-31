@@ -35,4 +35,18 @@ return [
         ],
     ],
 
+    'youtube' => [
+        // DevAfora channel — used to list the latest uploads on the home page.
+        'devafora_channel' => env('YOUTUBE_DEVAFORA_CHANNEL_ID', 'UCOqSuTadeEwf4aamjeYOrMQ'),
+    ],
+
+    'giscus' => [
+        // GitHub Discussions-based comments (https://giscus.app). These values are
+        // public (they end up in the client) — generate them on giscus.app.
+        'repo' => env('GISCUS_REPO'),
+        'repo_id' => env('GISCUS_REPO_ID'),
+        'category' => env('GISCUS_CATEGORY', 'Announcements'),
+        'category_id' => env('GISCUS_CATEGORY_ID'),
+    ],
+
 ];

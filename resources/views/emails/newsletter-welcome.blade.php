@@ -46,7 +46,7 @@
                                 <tr>
                                     <td style="padding: 10px 0;">
                                         <span style="color: #3b82f6; font-weight: bold; font-size: 18px; margin-right: 10px;">✓</span>
-                                        <span style="color: #e2e8f0; font-size: 16px;">Tutoriais práticos sobre Laravel, Vue.js e tecnologias modernas</span>
+                                        <span style="color: #e2e8f0; font-size: 16px;">Conteúdos práticos sobre o ecossistema PHP — Laravel, Symfony, Slim, HyperF e arquitetura de software em geral</span>
                                     </td>
                                 </tr>
                                 <tr>

@@ -4,6 +4,11 @@ import { ArrowLeftIcon, ClockIcon } from '@heroicons/vue/24/outline'
 import { onMounted, nextTick } from 'vue'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/monokai.css'
+import { useI18n } from '@/composables/useI18n'
+import SiteNavbar from '@/components/SiteNavbar.vue'
+import Comments from '@/components/Comments.vue'
+
+const { t, locale } = useI18n()
 
 interface Post {
   id: number
@@ -35,15 +40,17 @@ onMounted(() => {
   <Head :title="post.title" />
 
   <div class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+    <SiteNavbar />
+
     <!-- Header -->
-    <header class="border-b border-slate-800 bg-slate-900/50">
+    <header class="border-b border-slate-800 bg-slate-900/50 pt-16">
       <div class="container mx-auto max-w-4xl px-4 py-6">
         <Link
-          href="/"
+          href="/posts"
           class="inline-flex items-center gap-2 text-gray-400 transition-colors hover:text-white"
         >
           <ArrowLeftIcon class="h-5 w-5" />
-          <span>Voltar</span>
+          <span>{{ t('back') }}</span>
         </Link>
       </div>
     </header>
@@ -57,7 +64,7 @@ onMounted(() => {
         </div>
 
         <!-- Title -->
-        <h1 class="mb-6 text-4xl font-bold text-white md:text-5xl">
+        <h1 class="mb-6 font-heading text-4xl font-semibold leading-tight tracking-tight text-white md:text-5xl">
           {{ post.title }}
         </h1>
 
@@ -68,10 +75,10 @@ onMounted(() => {
           </div>
           <div v-if="post.read_time" class="flex items-center gap-1">
             <ClockIcon class="h-4 w-4" />
-            <span>{{ post.read_time }} min read</span>
+            <span>{{ post.read_time }} {{ t('minRead') }}</span>
           </div>
           <div v-if="post.published_at">
-            {{ new Date(post.published_at).toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' }) }}
+            {{ new Date(post.published_at).toLocaleDateString(locale === 'en' ? 'en-US' : 'pt-BR', { year: 'numeric', month: 'long', day: 'numeric' }) }}
           </div>
         </div>
 
@@ -93,9 +100,12 @@ onMounted(() => {
 
         <!-- Content -->
         <div
-          class="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-p:text-gray-300 prose-a:text-blue-400 prose-strong:text-white prose-code:rounded prose-code:bg-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-blue-400 prose-pre:overflow-x-auto prose-pre:rounded-xl prose-pre:bg-slate-900 prose-pre:p-0 prose-img:rounded-xl"
+          class="prose prose-invert prose-lg max-w-none prose-headings:font-heading prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-white prose-h2:mt-14 prose-h2:mb-5 prose-h2:text-3xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:text-2xl prose-p:my-6 prose-p:leading-8 prose-p:text-gray-300 prose-a:text-blue-400 prose-strong:text-white prose-code:rounded prose-code:bg-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-blue-400 prose-pre:overflow-x-auto prose-pre:rounded-xl prose-pre:bg-slate-900 prose-pre:p-0 prose-img:my-8 prose-img:mx-auto prose-img:rounded-xl prose-li:my-1.5 prose-ul:my-6 prose-ol:my-6 prose-hr:my-12 prose-hr:border-slate-800 prose-table:my-8"
           v-html="post.content"
         ></div>
+
+        <!-- Comments (Giscus) -->
+        <Comments :slug="post.slug" />
 
         <!-- Back Button -->
         <div class="mt-12 text-center">
@@ -104,7 +114,7 @@ onMounted(() => {
             class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 font-semibold text-white transition-all hover:from-blue-700 hover:to-purple-700"
           >
             <ArrowLeftIcon class="h-5 w-5" />
-            <span>Voltar para Home</span>
+            <span>{{ t('backHome') }}</span>
           </Link>
         </div>
       </div>

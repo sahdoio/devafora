@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ClockIcon } from '@heroicons/vue/24/outline'
 import { Link } from '@inertiajs/vue3'
+import { useI18n } from '@/composables/useI18n'
+
+const { t, locale } = useI18n()
 
 interface Post {
   id: number
@@ -35,7 +38,7 @@ defineProps<{
 
     <!-- Content -->
     <div class="p-6">
-      <h3 class="mb-2 text-xl font-bold text-white line-clamp-2 transition-colors group-hover:text-blue-400">
+      <h3 class="mb-2 font-heading text-xl font-semibold tracking-tight text-white line-clamp-2 transition-colors group-hover:text-blue-400">
         {{ post.title }}
       </h3>
       <p class="mb-4 text-sm text-gray-400 line-clamp-2">
@@ -57,10 +60,10 @@ defineProps<{
       <div class="flex items-center gap-4 text-sm text-gray-500">
         <div v-if="post.read_time" class="flex items-center gap-1">
           <ClockIcon class="h-4 w-4" />
-          <span>{{ post.read_time }} min read</span>
+          <span>{{ post.read_time }} {{ t('minRead') }}</span>
         </div>
         <span v-if="post.published_at">
-          {{ new Date(post.published_at).toLocaleDateString('pt-BR', { year: 'numeric', month: 'short', day: 'numeric' }) }}
+          {{ new Date(post.published_at).toLocaleDateString(locale === 'en' ? 'en-US' : 'pt-BR', { year: 'numeric', month: 'short', day: 'numeric' }) }}
         </span>
       </div>
     </div>

@@ -15,7 +15,6 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             ProfileSeeder::class,
             LinkSeeder::class,
-            PostSeeder::class,
             NewsletterSubscriptionSeeder::class,
         ]);
     }

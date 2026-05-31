@@ -4,9 +4,19 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+/**
+ * Posts moved from the database to markdown files under content/posts/.
+ * This drops the now-unused `posts` table. `down()` recreates the original
+ * schema so the migration stays reversible.
+ */
 return new class extends Migration
 {
     public function up(): void
+    {
+        Schema::dropIfExists('posts');
+    }
+
+    public function down(): void
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
@@ -28,10 +38,5 @@ return new class extends Migration
             $table->index('published_at');
             $table->index('slug');
         });
-    }
-
-    public function down(): void
-    {
-        Schema::dropIfExists('posts');
     }
 };

@@ -22,7 +22,7 @@ class SubscribeToNewsletterAction
                 return $subscription;
             }
 
-            $isNewSubscription = !$subscription->exists;
+            $isNewSubscription = ! $subscription->exists;
 
             $subscription->name = $name ?? $subscription->name;
             $subscription->subscribe();

@@ -6,16 +6,24 @@ namespace App\Actions\Dashboard;
 
 use App\Models\Link;
 use App\Models\NewsletterSubscription;
-use App\Models\Post;
-use Illuminate\Support\Facades\DB;
+use App\Support\Posts\PostRepository;
 
 class GetDashboardStatsAction
 {
+    public function __construct(
+        private readonly PostRepository $posts,
+    ) {}
+
     public function execute(): array
     {
-        $totalPosts = Post::count();
-        $publishedPosts = Post::where('is_published', true)->count();
-        $draftPosts = Post::where('is_published', false)->count();
+        // Count distinct posts (folders), regardless of language.
+        $slugs = $this->posts->slugs();
+        $totalPosts = count($slugs);
+        $publishedPosts = count(array_filter(
+            $slugs,
+            fn (string $slug): bool => $this->posts->isPublishedInAnyLocale($slug),
+        ));
+        $draftPosts = $totalPosts - $publishedPosts;
 
         $totalLinks = Link::count();
         $activeLinks = Link::where('is_active', true)->count();
@@ -29,7 +37,7 @@ class GetDashboardStatsAction
             ->groupBy('date')
             ->orderBy('date')
             ->get()
-            ->map(fn($item): array => [
+            ->map(fn ($item): array => [
                 'date' => $item->date,
                 'count' => $item->count,
             ]);

@@ -25,7 +25,7 @@ class NewsletterController extends Controller
             'data' => [
                 'email' => $newsletterSubscription->email,
                 'subscribed' => true,
-            ]
+            ],
         ], 201);
     }
 }
