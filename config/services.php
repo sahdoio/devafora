@@ -38,6 +38,10 @@ return [
     'youtube' => [
         // DevAfora channel — used to list the latest uploads on the home page.
         'devafora_channel' => env('YOUTUBE_DEVAFORA_CHANNEL_ID', 'UCOqSuTadeEwf4aamjeYOrMQ'),
+        // Optional YouTube Data API v3 key. When set it's used first (reliable
+        // from any IP); otherwise we fall back to the public RSS feed, which can
+        // be throttled/blocked on datacenter IPs.
+        'api_key' => env('YOUTUBE_API_KEY'),
     ],
 
     'giscus' => [
