@@ -46,9 +46,9 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
     // Newsletter
     Route::get('newsletter', [AdminNewsletterController::class, 'index'])->name('newsletter.index');
-    Route::get('newsletter/{newsletter}', [AdminNewsletterController::class, 'show'])->name('newsletter.show');
-    Route::post('newsletter/{newsletter}/toggle', [AdminNewsletterController::class, 'toggleStatus'])->name('newsletter.toggle');
-    Route::delete('newsletter/{newsletter}', [AdminNewsletterController::class, 'destroy'])->name('newsletter.destroy');
+    Route::get('newsletter/{newsletterSubscription}', [AdminNewsletterController::class, 'show'])->name('newsletter.show');
+    Route::post('newsletter/{newsletterSubscription}/toggle', [AdminNewsletterController::class, 'toggleStatus'])->name('newsletter.toggle');
+    Route::delete('newsletter/{newsletterSubscription}', [AdminNewsletterController::class, 'destroy'])->name('newsletter.destroy');
 });
 
 // Legacy dashboard route (redirect to new admin dashboard)
