@@ -10,6 +10,8 @@ class DeleteNewsletterSubscriptionAction
 {
     public function execute(NewsletterSubscription $newsletterSubscription): bool
     {
-        return $newsletterSubscription->delete();
+        // Eloquent's delete() returns bool|null (null when the model no longer
+        // exists, e.g. a double delete). Cast so the declared bool return holds.
+        return (bool) $newsletterSubscription->delete();
     }
 }

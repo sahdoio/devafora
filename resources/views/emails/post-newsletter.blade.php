@@ -126,15 +126,17 @@
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 20px 0;">
                                 <tr>
                                     <td style="text-align: center;">
-                                        <a href="https://youtube.com/@devafora" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 500;">YouTube</a>
+                                        <a href="https://www.youtube.com/@devafora" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 500;">YouTube</a>
                                         <span style="color: #475569;">•</span>
-                                        <a href="https://tiktok.com/@devafora" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 500;">TikTok</a>
+                                        <a href="https://www.instagram.com/lucassahdo" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 500;">Instagram</a>
                                         <span style="color: #475569;">•</span>
-                                        <a href="https://twitter.com/devafora" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 500;">Twitter</a>
+                                        <a href="https://www.tiktok.com/@lucassahdo" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 500;">TikTok</a>
                                         <span style="color: #475569;">•</span>
-                                        <a href="https://instagram.com/devafora" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 500;">Instagram</a>
+                                        <a href="https://x.com/sahdoio" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 500;">X</a>
                                         <span style="color: #475569;">•</span>
-                                        <a href="https://github.com/devafora" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 500;">GitHub</a>
+                                        <a href="https://www.linkedin.com/in/lucassahdo/" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 500;">LinkedIn</a>
+                                        <span style="color: #475569;">•</span>
+                                        <a href="https://github.com/sahdoio" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 500;">GitHub</a>
                                     </td>
                                 </tr>
                             </table>

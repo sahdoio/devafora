@@ -18,7 +18,7 @@ interface Post {
   published_at: string
 }
 
-const props = defineProps<{
+defineProps<{
   posts: Post[]
 }>()
 </script>

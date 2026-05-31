@@ -88,11 +88,12 @@
                             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 20px 0;">
                                 <tr>
                                     <td style="text-align: center;">
-                                        <a href="https://youtube.com/@devafora" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px;">YouTube</a>
-                                        <a href="https://tiktok.com/@devafora" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px;">TikTok</a>
-                                        <a href="https://twitter.com/devafora" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px;">Twitter</a>
-                                        <a href="https://instagram.com/devafora" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px;">Instagram</a>
-                                        <a href="https://github.com/devafora" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px;">GitHub</a>
+                                        <a href="https://www.youtube.com/@devafora" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px;">YouTube</a>
+                                        <a href="https://www.instagram.com/lucassahdo" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px;">Instagram</a>
+                                        <a href="https://www.tiktok.com/@lucassahdo" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px;">TikTok</a>
+                                        <a href="https://x.com/sahdoio" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px;">X</a>
+                                        <a href="https://www.linkedin.com/in/lucassahdo/" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px;">LinkedIn</a>
+                                        <a href="https://github.com/sahdoio" style="display: inline-block; margin: 0 10px; color: #94a3b8; text-decoration: none; font-size: 14px;">GitHub</a>
                                     </td>
                                 </tr>
                             </table>

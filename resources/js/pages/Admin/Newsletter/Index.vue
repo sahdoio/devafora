@@ -204,8 +204,9 @@ const formatDate = (dateString: string) => {
                                 ? 'bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700'
                                 : 'bg-gray-100 dark:bg-gray-900 text-gray-400 cursor-not-allowed',
                     ]"
-                    v-html="link.label"
-                />
+                >
+                    <span v-html="link.label" />
+                </Link>
             </div>
         </div>
     </AppLayout>
