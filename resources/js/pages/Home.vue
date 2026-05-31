@@ -112,6 +112,19 @@ function formatDate(date: string) {
         </div>
       </section>
 
+      <!-- NEWSLETTER -->
+      <section class="mt-10 w-full max-w-2xl">
+        <div class="rounded-xl border border-border-subtle bg-surface-secondary px-5 py-4 text-center">
+          <h2 class="font-heading text-lg font-semibold tracking-tight">
+            {{ t('newsletterTitle') }}
+          </h2>
+          <p class="mb-4 mt-1 text-sm text-text-muted">
+            {{ t('newsletterText') }}
+          </p>
+          <NewsletterForm />
+        </div>
+      </section>
+
       <!-- POSTS -->
       <section class="mt-16 w-full">
         <div class="mb-6 flex items-end justify-between">
@@ -189,19 +202,6 @@ function formatDate(date: string) {
           <a href="https://www.youtube.com/@devafora" target="_blank" rel="noopener" class="text-brand hover:underline">
             {{ t('seeOnChannel') }} &rarr;
           </a>
-        </div>
-      </section>
-
-      <!-- NEWSLETTER -->
-      <section class="mt-16 w-full max-w-2xl">
-        <div class="rounded-2xl border border-border-subtle bg-surface-secondary p-8 text-center">
-          <h2 class="mb-3 font-heading text-2xl font-semibold tracking-tight">
-            {{ t('newsletterTitle') }}
-          </h2>
-          <p class="mb-7 text-text-secondary">
-            {{ t('newsletterText') }}
-          </p>
-          <NewsletterForm />
         </div>
       </section>
 
