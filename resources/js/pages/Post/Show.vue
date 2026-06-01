@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3'
 import { ArrowLeftIcon, ClockIcon } from '@heroicons/vue/24/outline'
-import { onMounted, nextTick } from 'vue'
+import { onMounted, nextTick, ref } from 'vue'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/monokai.css'
 import { useI18n } from '@/composables/useI18n'
 import SiteNavbar from '@/components/SiteNavbar.vue'
 import Comments from '@/components/Comments.vue'
+import PostToc from '@/components/PostToc.vue'
 
 const { t, locale } = useI18n()
 
@@ -27,6 +28,8 @@ defineProps<{
   post: Post
 }>()
 
+const contentEl = ref<HTMLElement | null>(null)
+
 onMounted(() => {
   nextTick(() => {
     document.querySelectorAll('pre code').forEach((block) => {
@@ -42,14 +45,17 @@ onMounted(() => {
   <div class="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
     <SiteNavbar />
 
+    <!-- Jump navigation + back to top -->
+    <PostToc :target="contentEl" />
+
     <!-- Header -->
-    <header class="border-b border-slate-800 bg-slate-900/50 pt-16">
-      <div class="container mx-auto max-w-4xl px-4 py-6">
+    <header class="pt-16">
+      <div class="container mx-auto max-w-4xl px-4 pb-2 pt-6">
         <Link
           href="/posts"
-          class="inline-flex items-center gap-2 text-gray-400 transition-colors hover:text-white"
+          class="inline-flex items-center gap-1.5 text-sm text-gray-500 transition-colors hover:text-gray-300"
         >
-          <ArrowLeftIcon class="h-5 w-5" />
+          <ArrowLeftIcon class="h-4 w-4" />
           <span>{{ t('back') }}</span>
         </Link>
       </div>
@@ -100,6 +106,7 @@ onMounted(() => {
 
         <!-- Content -->
         <div
+          ref="contentEl"
           class="prose prose-invert prose-lg max-w-none prose-headings:font-heading prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-white prose-h2:mt-14 prose-h2:mb-5 prose-h2:text-3xl prose-h3:mt-10 prose-h3:mb-4 prose-h3:text-2xl prose-p:my-6 prose-p:leading-8 prose-p:text-gray-300 prose-a:text-blue-400 prose-strong:text-white prose-code:rounded prose-code:bg-slate-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-blue-400 prose-pre:overflow-x-auto prose-pre:rounded-xl prose-pre:bg-slate-900 prose-pre:p-0 prose-img:my-8 prose-img:mx-auto prose-img:rounded-xl prose-li:my-1.5 prose-ul:my-6 prose-ol:my-6 prose-hr:my-12 prose-hr:border-slate-800 prose-table:my-8"
           v-html="post.content"
         ></div>

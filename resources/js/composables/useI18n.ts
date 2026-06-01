@@ -50,6 +50,8 @@ const messages: Record<Locale, Messages> = {
     back: 'Voltar',
     backHome: 'Voltar para Home',
     comments: 'Comentários',
+    tocTitle: 'Conteúdo',
+    backToTop: 'Voltar ao topo',
 
     // Footer / nav
     rights: 'Todos os direitos reservados.',
@@ -99,6 +101,8 @@ const messages: Record<Locale, Messages> = {
     back: 'Back',
     backHome: 'Back to Home',
     comments: 'Comments',
+    tocTitle: 'Contents',
+    backToTop: 'Back to top',
 
     // Footer / nav
     rights: 'All rights reserved.',
