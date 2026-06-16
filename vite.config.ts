@@ -14,6 +14,11 @@ export default defineConfig({
         tailwindcss(),
         wayfinder({
             formVariants: true,
+            // In the split docker setup Vite runs in the node container, which has
+            // no PHP. The php container generates these files (see `make wayfinder`),
+            // so the plugin's own invocation is turned into a no-op there via
+            // WAYFINDER_COMMAND=true. Local (non-docker) dev keeps the default.
+            command: process.env.WAYFINDER_COMMAND ?? 'php artisan wayfinder:generate',
         }),
         vue({
             template: {
