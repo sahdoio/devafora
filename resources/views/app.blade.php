@@ -35,8 +35,9 @@
         <link rel="icon" href="/images/logo_icon.png" type="image/png">
         <link rel="apple-touch-icon" href="/images/logo_icon.png">
 
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700|space-grotesk:500,600,700" rel="stylesheet" />
+        {{-- Self-hosted: fonts.bunny.net intermittently hung and this stylesheet blocks rendering. --}}
+        <link rel="preload" href="/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+        <link href="/fonts/fonts.css" rel="stylesheet" />
 
         @vite(['resources/js/app.ts', "resources/js/pages/{$page['component']}.vue"])
         @inertiaHead
