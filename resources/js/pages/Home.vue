@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Head, Link } from '@inertiajs/vue3'
+import { Deferred, Head, Link } from '@inertiajs/vue3'
 import NewsletterForm from '@/components/NewsletterForm.vue'
 import PostCard from '@/components/PostCard.vue'
 import SiteNavbar from '@/components/SiteNavbar.vue'
@@ -37,7 +37,7 @@ interface Video {
 const props = defineProps<{
   profile: Profile | null
   posts: Post[]
-  videos: Video[]
+  videos?: Video[]
 }>()
 
 const socials = [
@@ -50,8 +50,8 @@ const socials = [
 ]
 
 const visibleVideos = ref(6)
-const shownVideos = computed(() => props.videos.slice(0, visibleVideos.value))
-const hasMoreVideos = computed(() => visibleVideos.value < props.videos.length)
+const shownVideos = computed(() => (props.videos ?? []).slice(0, visibleVideos.value))
+const hasMoreVideos = computed(() => visibleVideos.value < (props.videos ?? []).length)
 
 function loadMoreVideos() {
   visibleVideos.value += 6
@@ -156,53 +156,61 @@ function formatDate(date: string) {
           </a>
         </div>
 
-        <div v-if="videos.length > 0">
-          <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            <a
-              v-for="video in shownVideos"
-              :key="video.videoId"
-              :href="video.url"
-              target="_blank"
-              rel="noopener"
-              class="group flex flex-col overflow-hidden rounded-xl border border-border-subtle bg-surface-secondary transition-all duration-150 hover:border-brand/40 hover:bg-surface-tertiary"
-            >
-              <div class="relative aspect-video overflow-hidden">
-                <img
-                  :src="video.thumbnail"
-                  :alt="video.title"
-                  loading="lazy"
-                  class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                <div class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100">
-                  <span class="flex h-12 w-12 items-center justify-center rounded-full bg-brand text-surface-primary">
-                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
-                  </span>
+        <Deferred data="videos">
+          <template #fallback>
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <div v-for="n in 3" :key="n" class="aspect-video animate-pulse rounded-xl bg-surface-secondary" />
+            </div>
+          </template>
+
+          <div v-if="videos && videos.length > 0">
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <a
+                v-for="video in shownVideos"
+                :key="video.videoId"
+                :href="video.url"
+                target="_blank"
+                rel="noopener"
+                class="group flex flex-col overflow-hidden rounded-xl border border-border-subtle bg-surface-secondary transition-all duration-150 hover:border-brand/40 hover:bg-surface-tertiary"
+              >
+                <div class="relative aspect-video overflow-hidden">
+                  <img
+                    :src="video.thumbnail"
+                    :alt="video.title"
+                    loading="lazy"
+                    class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100">
+                    <span class="flex h-12 w-12 items-center justify-center rounded-full bg-brand text-surface-primary">
+                      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <div class="flex flex-1 flex-col p-4">
-                <h3 class="mb-2 line-clamp-2 font-heading text-[16px] font-semibold leading-snug tracking-tight text-text-primary">
-                  {{ video.title }}
-                </h3>
-                <span class="mt-auto text-[13px] text-text-muted">{{ formatDate(video.published_at) }}</span>
-              </div>
+                <div class="flex flex-1 flex-col p-4">
+                  <h3 class="mb-2 line-clamp-2 font-heading text-[16px] font-semibold leading-snug tracking-tight text-text-primary">
+                    {{ video.title }}
+                  </h3>
+                  <span class="mt-auto text-[13px] text-text-muted">{{ formatDate(video.published_at) }}</span>
+                </div>
+              </a>
+            </div>
+
+            <div v-if="hasMoreVideos" class="mt-6 flex justify-center">
+              <button
+                @click="loadMoreVideos"
+                class="rounded-lg bg-brand/10 px-6 py-2 text-sm font-medium text-brand transition-all duration-150 hover:bg-brand/20"
+              >
+                {{ t('loadMore') }}
+              </button>
+            </div>
+          </div>
+          <div v-else class="rounded-xl border border-border-subtle bg-surface-secondary p-10 text-center text-text-muted">
+            {{ t('videosUnavailable') }}
+            <a href="https://www.youtube.com/@devafora" target="_blank" rel="noopener" class="text-brand hover:underline">
+              {{ t('seeOnChannel') }} &rarr;
             </a>
           </div>
-
-          <div v-if="hasMoreVideos" class="mt-6 flex justify-center">
-            <button
-              @click="loadMoreVideos"
-              class="rounded-lg bg-brand/10 px-6 py-2 text-sm font-medium text-brand transition-all duration-150 hover:bg-brand/20"
-            >
-              {{ t('loadMore') }}
-            </button>
-          </div>
-        </div>
-        <div v-else class="rounded-xl border border-border-subtle bg-surface-secondary p-10 text-center text-text-muted">
-          {{ t('videosUnavailable') }}
-          <a href="https://www.youtube.com/@devafora" target="_blank" rel="noopener" class="text-brand hover:underline">
-            {{ t('seeOnChannel') }} &rarr;
-          </a>
-        </div>
+        </Deferred>
       </section>
 
       <!-- FOOTER -->

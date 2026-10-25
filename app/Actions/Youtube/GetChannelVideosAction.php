@@ -37,11 +37,9 @@ class GetChannelVideosAction
         if ($videos === null) {
             $videos = $this->fetch();
 
-            // Only cache successful (non-empty) responses so a transient
-            // failure doesn't pin an empty list for an hour.
-            if ($videos !== []) {
-                Cache::put(self::CACHE_KEY, $videos, now()->addHour());
-            }
+            // Failures are cached briefly so a throttled/unreachable YouTube
+            // doesn't cost every request up to two HTTP timeouts.
+            Cache::put(self::CACHE_KEY, $videos, $videos === [] ? now()->addMinutes(10) : now()->addHour());
         }
 
         return array_slice($videos, 0, $limit);
